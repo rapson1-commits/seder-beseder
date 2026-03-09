@@ -1,0 +1,129 @@
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-heebo: 'Heebo', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  direction: rtl;
+  font-family: var(--font-heebo), sans-serif;
+  background: #F8F8F4;
+  color: #18180F;
+  -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
+}
+
+/* Mobile shell */
+.app-shell {
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  background: #F8F8F4;
+}
+
+/* Scrollable area above bottom nav */
+.main-content {
+  padding-bottom: 80px;
+  min-height: 100vh;
+}
+
+/* Bottom nav */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 430px;
+  z-index: 40;
+}
+
+/* Smooth page transitions */
+.page-enter { animation: pageIn 0.28s ease both; }
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Cards */
+.card { @apply bg-white rounded-2xl p-4 shadow-card; }
+.card-sm { @apply bg-white rounded-xl p-3 shadow-card; }
+
+/* Avatar sizes */
+.av-sm  { @apply w-9  h-9  rounded-xl text-sm  font-black text-white flex items-center justify-center flex-shrink-0; }
+.av-md  { @apply w-12 h-12 rounded-2xl text-lg font-black text-white flex items-center justify-center flex-shrink-0; }
+.av-lg  { @apply w-16 h-16 rounded-2xl text-2xl font-black text-white flex items-center justify-center flex-shrink-0; }
+.av-xl  { @apply w-20 h-20 rounded-3xl text-3xl font-black text-white flex items-center justify-center flex-shrink-0; }
+
+.av-side-mom { @apply bg-gradient-to-br from-blue-400 to-blue-600; }
+.av-side-dad { @apply bg-gradient-to-br from-green-500 to-green-700; }
+.av-side-sp  { @apply bg-gradient-to-br from-orange-400 to-orange-600; }
+.av-side-oth { @apply bg-gradient-to-br from-purple-400 to-purple-600; }
+
+/* Badges */
+.bdg { @apply text-xs font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1; }
+.bdg-green  { @apply bg-green-light  text-green-DEFAULT; }
+.bdg-orange { @apply bg-orange-light text-orange-DEFAULT; }
+.bdg-gold   { @apply bg-gold-light   text-gold-DEFAULT; }
+.bdg-red    { @apply bg-red-light    text-red-DEFAULT; }
+.bdg-blue   { @apply bg-blue-light   text-blue-DEFAULT; }
+.bdg-navy   { @apply bg-navy-DEFAULT/10 text-navy-DEFAULT; }
+
+/* Buttons */
+.btn-primary {
+  @apply w-full py-4 rounded-2xl font-bold text-base text-white
+         bg-gradient-to-br from-orange-DEFAULT to-orange-dark
+         shadow-md active:scale-95 transition-all flex items-center justify-center gap-2;
+}
+.btn-secondary {
+  @apply w-full py-3.5 rounded-2xl font-bold text-base text-navy-DEFAULT
+         bg-white border-2 border-gray-200
+         active:scale-95 transition-all flex items-center justify-center gap-2;
+}
+.btn-ghost {
+  @apply w-full py-3.5 rounded-2xl font-bold text-base text-white
+         bg-white/10 border border-white/20 backdrop-blur-sm
+         active:scale-95 transition-all flex items-center justify-center gap-2;
+}
+
+/* Form inputs */
+.fi {
+  @apply w-full bg-gray-50 border-2 border-gray-200 rounded-xl
+         px-4 py-3.5 text-base font-medium text-gray-800
+         focus:outline-none focus:border-orange-DEFAULT focus:bg-white
+         transition-colors;
+  direction: rtl;
+}
+.fi-label { @apply block text-sm font-bold text-gray-600 mb-1.5; }
+
+/* Section headers */
+.sec-hdr { @apply flex items-center justify-between mb-2.5 mt-4; }
+.sec-title { @apply text-lg font-extrabold text-navy-DEFAULT; }
+.sec-link { @apply text-sm font-bold text-orange-DEFAULT bg-transparent border-none cursor-pointer; }
+
+/* Insight strip */
+.insight-strip {
+  @apply rounded-xl p-3.5 flex items-start gap-3 mb-3;
+}
+
+/* Timeline */
+.yr-line { @apply flex items-center gap-2.5 my-4; }
+.yr-badge { @apply bg-navy-DEFAULT text-white text-xs font-extrabold px-3 py-1.5 rounded-full whitespace-nowrap; }
+
+/* Touch targets */
+button, a { touch-action: manipulation; }
+
+/* Scrollbar hide */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Chips */
+.chip { @apply text-xs font-semibold px-3 py-1.5 rounded-full border cursor-pointer transition-all whitespace-nowrap; }
+.chip.on { @apply bg-navy-DEFAULT text-white border-navy-DEFAULT; }
+.chip:not(.on) { @apply bg-white text-gray-500 border-gray-200; }
