@@ -46,10 +46,8 @@ export default function LoginPage() {
     setLoading(true); setError('')
     const family = await getFamilyByInviteCode(inviteCode)
     if (!family) { setError('קוד הזמנה לא נמצא'); setLoading(false); return }
-    // Save invite code to complete after auth
     sessionStorage.setItem('pendingFamilyId', family.id)
-    setLoading(false)
-    setTab('login')
+    setLoading(false); setTab('login')
   }
 
   async function handleCreate() {
@@ -58,123 +56,174 @@ export default function LoginPage() {
     setTab('login')
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-navy-DEFAULT via-navy-soft to-navy-DEFAULT
-                    flex flex-col items-center justify-center px-6 py-10 relative overflow-hidden">
-      {/* bg circles */}
-      <div className="absolute top-[-80px] right-[-80px] w-72 h-72 rounded-full bg-orange-DEFAULT/10 pointer-events-none" />
-      <div className="absolute bottom-20 left-[-60px] w-48 h-48 rounded-full bg-green-DEFAULT/8 pointer-events-none" />
+  const inp: React.CSSProperties = {
+    width:'100%', padding:'0.85rem 1rem',
+    background:'#f9fafb', border:'2px solid #e5e7eb',
+    borderRadius:'12px', fontSize:'1rem', fontWeight:500, color:'#1f2937',
+    outline:'none', direction:'rtl', fontFamily:'inherit', boxSizing:'border-box',
+  }
 
-      {/* Logo */}
-      <div className="text-center mb-8 relative z-10">
-        <div className="w-20 h-20 bg-gradient-to-br from-orange-DEFAULT to-orange-dark
-                        rounded-3xl flex items-center justify-center text-4xl mx-auto mb-4
-                        shadow-[0_12px_32px_rgba(240,122,85,.4)]">🏠</div>
-        <h1 className="text-4xl font-black text-white">סדר <span className="text-orange-DEFAULT">בסדר</span></h1>
-        <p className="text-white/50 mt-2 text-sm">עושים סדר בחגים המשפחתיים</p>
+  const btnOrange: React.CSSProperties = {
+    width:'100%', padding:'0.95rem',
+    background:'linear-gradient(135deg,#F07A55,#d45f38)',
+    border:'none', borderRadius:'14px', color:'white',
+    fontSize:'1rem', fontWeight:700, cursor:'pointer',
+    fontFamily:'inherit', boxShadow:'0 4px 16px rgba(240,122,85,.4)',
+    transition:'transform .15s',
+  }
+
+  return (
+    <div style={{
+      minHeight:'100vh',
+      background:'linear-gradient(160deg,#192542 0%,#2e4a82 55%,#192542 100%)',
+      display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+      padding:'2rem 1.25rem', position:'relative', overflow:'hidden',
+    }}>
+      {/* עיגולי רקע */}
+      <div style={{position:'absolute',top:'-100px',right:'-100px',width:'320px',height:'320px',borderRadius:'50%',background:'rgba(240,122,85,0.14)',pointerEvents:'none'}}/>
+      <div style={{position:'absolute',bottom:'-80px',left:'-80px',width:'260px',height:'260px',borderRadius:'50%',background:'rgba(78,155,106,0.1)',pointerEvents:'none'}}/>
+
+      {/* לוגו */}
+      <div style={{textAlign:'center',marginBottom:'2rem',zIndex:10,position:'relative'}}>
+        <div style={{
+          width:'88px',height:'88px',
+          background:'linear-gradient(135deg,#F07A55,#d45f38)',
+          borderRadius:'26px',display:'flex',alignItems:'center',justifyContent:'center',
+          fontSize:'42px',margin:'0 auto 1rem',
+          boxShadow:'0 14px 36px rgba(240,122,85,.45)',
+        }}>🏠</div>
+        <h1 style={{fontSize:'2.6rem',fontWeight:900,color:'white',margin:0}}>
+          סדר <span style={{color:'#F07A55'}}>בסדר</span>
+        </h1>
+        <p style={{color:'rgba(255,255,255,.5)',marginTop:'0.4rem',fontSize:'0.9rem'}}>
+          עושים סדר בחגים המשפחתיים
+        </p>
+        <div style={{display:'flex',gap:'0.6rem',justifyContent:'center',marginTop:'1rem',flexWrap:'wrap'}}>
+          {['📅 חגים','🧺 מי מביא מה','💡 תובנות'].map(f=>(
+            <span key={f} style={{
+              background:'rgba(255,255,255,.12)',border:'1px solid rgba(255,255,255,.18)',
+              borderRadius:'100px',padding:'0.3rem 0.8rem',
+              fontSize:'0.75rem',color:'rgba(255,255,255,.85)',backdropFilter:'blur(8px)',
+            }}>{f}</span>
+          ))}
+        </div>
       </div>
 
-      {/* Card */}
-      <div className="w-full max-w-sm bg-white/7 backdrop-blur-xl border border-white/10 rounded-3xl p-6 relative z-10">
-
-        {/* Tabs */}
+      {/* כרטיס */}
+      <div style={{
+        width:'100%',maxWidth:'380px',
+        background:'white',borderRadius:'28px',
+        padding:'1.75rem',
+        boxShadow:'0 24px 60px rgba(0,0,0,.3)',
+        zIndex:10,position:'relative',
+      }}>
+        {/* טאבים */}
         {!otpSent && (
-          <div className="flex gap-1 bg-white/10 rounded-xl p-1 mb-6">
-            {(['login','join','create'] as const).map(t => (
-              <button key={t}
-                className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all
-                            ${tab === t ? 'bg-white text-navy-DEFAULT shadow-sm' : 'text-white/60'}`}
-                onClick={() => { setTab(t); setError('') }}>
-                {t === 'login' ? 'כניסה' : t === 'join' ? 'הצטרפות' : 'משפחה חדשה'}
-              </button>
+          <div style={{display:'flex',gap:'3px',background:'#f3f4f6',borderRadius:'13px',padding:'4px',marginBottom:'1.5rem'}}>
+            {([['login','כניסה'],['join','הצטרפות'],['create','חדש']] as const).map(([t,l])=>(
+              <button key={t} onClick={()=>{setTab(t);setError('')}} style={{
+                flex:1,padding:'0.55rem 0.2rem',borderRadius:'9px',border:'none',
+                fontSize:'0.78rem',fontWeight:700,cursor:'pointer',transition:'all .2s',
+                background:tab===t?'white':'transparent',
+                color:tab===t?'#192542':'#9ca3af',
+                boxShadow:tab===t?'0 2px 8px rgba(0,0,0,.1)':'none',
+                fontFamily:'inherit',
+              }}>{l}</button>
             ))}
           </div>
         )}
 
-        {/* LOGIN TAB */}
-        {tab === 'login' && !otpSent && (
-          <div className="space-y-3">
-            <button onClick={handleGoogle} disabled={loading}
-              className="w-full py-4 rounded-2xl font-bold text-navy-DEFAULT bg-white
-                         flex items-center justify-center gap-3 active:scale-95 transition-all
-                         shadow-md disabled:opacity-60">
-              <span className="text-lg font-black">G</span> כניסה עם Google
+        {/* LOGIN */}
+        {tab==='login' && !otpSent && (
+          <div style={{display:'flex',flexDirection:'column',gap:'0.75rem'}}>
+            <button onClick={handleGoogle} disabled={loading} style={{
+              width:'100%',padding:'0.9rem',
+              background:'white',border:'2px solid #e5e7eb',
+              borderRadius:'14px',cursor:'pointer',
+              display:'flex',alignItems:'center',justifyContent:'center',gap:'0.75rem',
+              fontSize:'0.95rem',fontWeight:700,color:'#192542',
+              boxShadow:'0 2px 8px rgba(0,0,0,.06)',fontFamily:'inherit',
+              transition:'box-shadow .2s',
+            }}>
+              <svg width="20" height="20" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              </svg>
+              כניסה עם Google
             </button>
-            <div className="text-center text-white/30 text-xs my-2">או</div>
-            {!otpSent ? (
-              <>
-                <input className="fi bg-white/10 border-white/20 text-white placeholder:text-white/40"
-                       placeholder="מספר טלפון (054-...)"
-                       value={phone} onChange={e => setPhone(e.target.value)} />
-                <button onClick={handlePhone} disabled={loading}
-                  className="btn-primary disabled:opacity-60">
-                  {loading ? 'שולח...' : '📱 שלח קוד SMS'}
-                </button>
-              </>
-            ) : null}
+
+            <div style={{display:'flex',alignItems:'center',gap:'0.75rem',margin:'0.2rem 0'}}>
+              <div style={{flex:1,height:'1px',background:'#e5e7eb'}}/>
+              <span style={{fontSize:'0.8rem',color:'#9ca3af',fontWeight:600}}>או</span>
+              <div style={{flex:1,height:'1px',background:'#e5e7eb'}}/>
+            </div>
+
+            <input style={inp} placeholder="📱 מספר טלפון (054-...)"
+              value={phone} onChange={e=>setPhone(e.target.value)} type="tel"/>
+            <button onClick={handlePhone} disabled={loading} style={btnOrange}>
+              {loading?'שולח...':'שלח קוד SMS'}
+            </button>
           </div>
         )}
 
         {/* OTP */}
         {otpSent && (
-          <div className="space-y-3">
-            <p className="text-white text-sm text-center mb-4">
-              שלחנו קוד 6 ספרות ל-{phone}
-            </p>
-            <input className="fi bg-white/10 border-white/20 text-white text-center
-                               text-2xl font-bold tracking-[.3em] placeholder:text-white/30"
-                   placeholder="000000" maxLength={6}
-                   value={otp} onChange={e => setOtp(e.target.value)} />
-            <button onClick={handleOtp} disabled={loading} className="btn-primary disabled:opacity-60">
-              {loading ? 'מאמת...' : 'כניסה ✓'}
+          <div style={{display:'flex',flexDirection:'column',gap:'0.75rem'}}>
+            <div style={{textAlign:'center',marginBottom:'0.5rem'}}>
+              <div style={{fontSize:'2.5rem',marginBottom:'0.5rem'}}>📱</div>
+              <p style={{fontSize:'0.9rem',color:'#4b5563',fontWeight:600}}>שלחנו קוד ל-{phone}</p>
+            </div>
+            <input style={{...inp,fontSize:'1.8rem',fontWeight:700,color:'#192542',textAlign:'center',letterSpacing:'0.4em'}}
+              placeholder="000000" maxLength={6} value={otp} onChange={e=>setOtp(e.target.value)}/>
+            <button onClick={handleOtp} disabled={loading} style={btnOrange}>
+              {loading?'מאמת...':'כניסה ✓'}
             </button>
-            <button onClick={() => setOtpSent(false)} className="btn-ghost text-sm">
+            <button onClick={()=>setOtpSent(false)} style={{background:'none',border:'none',color:'#6b7280',fontSize:'0.85rem',cursor:'pointer',fontFamily:'inherit'}}>
               ← חזרה
             </button>
           </div>
         )}
 
-        {/* JOIN TAB */}
-        {tab === 'join' && (
-          <div className="space-y-3">
-            <p className="text-white/70 text-sm mb-3">
-              קיבלת קוד הזמנה ממשפחתך? הכנס אותו כאן:
-            </p>
-            <input className="fi bg-white/10 border-white/20 text-white text-center
-                               text-xl font-bold tracking-widest placeholder:text-white/30 uppercase"
-                   placeholder="LEVI2025" maxLength={8}
-                   value={inviteCode} onChange={e => setInviteCode(e.target.value.toUpperCase())} />
-            <button onClick={handleJoin} disabled={loading} className="btn-primary disabled:opacity-60">
-              {loading ? 'מחפש...' : '🔍 מצא משפחה'}
+        {/* JOIN */}
+        {tab==='join' && (
+          <div style={{display:'flex',flexDirection:'column',gap:'0.75rem'}}>
+            <div style={{background:'#EBF2FF',borderRadius:'12px',padding:'0.8rem',fontSize:'0.85rem',color:'#4A82D4',fontWeight:500,textAlign:'right'}}>
+              📨 קיבלת קוד הזמנה ממשפחתך? הכנס אותו כאן
+            </div>
+            <input style={{...inp,fontSize:'1.4rem',fontWeight:700,color:'#192542',textAlign:'center',letterSpacing:'0.25em'}}
+              placeholder="ABCD1234" maxLength={8}
+              value={inviteCode} onChange={e=>setInviteCode(e.target.value.toUpperCase())}/>
+            <button onClick={handleJoin} disabled={loading} style={{...btnOrange,background:'linear-gradient(135deg,#4A82D4,#2563eb)',boxShadow:'0 4px 16px rgba(74,130,212,.4)'}}>
+              {loading?'מחפש...':'🔍 הצטרף למשפחה'}
             </button>
           </div>
         )}
 
-        {/* CREATE TAB */}
-        {tab === 'create' && (
-          <div className="space-y-3">
-            <p className="text-white/70 text-sm mb-3">
-              צור קבוצה משפחתית חדשה והזמן את כולם:
-            </p>
-            <input className="fi bg-white/10 border-white/20 text-white placeholder:text-white/40"
-                   placeholder="שם המשפחה (לדוגמה: משפחת לוי)"
-                   value={familyName} onChange={e => setFamilyName(e.target.value)} />
-            <button onClick={handleCreate} disabled={loading} className="btn-primary disabled:opacity-60">
-              👨‍👩‍👧‍👦 צור משפחה חדשה
+        {/* CREATE */}
+        {tab==='create' && (
+          <div style={{display:'flex',flexDirection:'column',gap:'0.75rem'}}>
+            <div style={{background:'#E8F5EE',borderRadius:'12px',padding:'0.8rem',fontSize:'0.85rem',color:'#4E9B6A',fontWeight:500,textAlign:'right'}}>
+              ✨ צור קבוצה משפחתית חדשה והזמן את כולם
+            </div>
+            <input style={inp} placeholder="שם המשפחה (לדוגמה: משפחת לוי)"
+              value={familyName} onChange={e=>setFamilyName(e.target.value)}/>
+            <button onClick={handleCreate} disabled={loading} style={{...btnOrange,background:'linear-gradient(135deg,#4E9B6A,#15803d)',boxShadow:'0 4px 16px rgba(78,155,106,.4)'}}>
+              {loading?'יוצר...':'👨‍👩‍👧‍👦 צור משפחה חדשה'}
             </button>
           </div>
         )}
 
         {error && (
-          <div className="mt-3 bg-red-DEFAULT/20 border border-red-DEFAULT/30 text-red-light
-                          rounded-xl px-4 py-3 text-sm font-medium text-center">
+          <div style={{marginTop:'0.75rem',background:'#FDECEA',border:'1px solid rgba(224,101,95,.3)',borderRadius:'12px',padding:'0.75rem 1rem',fontSize:'0.875rem',fontWeight:600,color:'#E0655F',textAlign:'center'}}>
             {error}
           </div>
         )}
       </div>
 
-      <p className="text-white/25 text-xs mt-6 text-center relative z-10">
-        בהתחברות אתה מסכים לתנאי השימוש
+      <p style={{color:'rgba(255,255,255,.2)',fontSize:'0.72rem',marginTop:'1.5rem',textAlign:'center',zIndex:10,position:'relative'}}>
+        סדר בסדר v1.0 · עם ❤️ למשפחות ישראל
       </p>
     </div>
   )
