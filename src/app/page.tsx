@@ -2,25 +2,28 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { getFamilyByInviteCode } from '@/lib/db'
 
 export default function LoginPage() {
   const router = useRouter()
-  const [tab, setTab] = useState<'login' | 'join' | 'create'>('login')
-  const [inviteCode, setInviteCode] = useState('')
-  const [familyName, setFamilyName] = useState('')
   const [phone, setPhone] = useState('')
   const [otp, setOtp] = useState('')
   const [otpSent, setOtpSent] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [tab, setTab] = useState<'login' | 'join' | 'create'>('login')
+  const [inviteCode, setInviteCode] = useState('')
+  const [familyName, setFamilyName] = useState('')
 
   async function handleGoogle() {
     setLoading(true)
-    await supabase.auth.signInWithOAuth({
+    setError('')
+    const { error: e } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${location.origin}/home` },
+      options: {
+        redirectTo: 'https://seder-beseder.com/home',
+      },
     })
+    if (e) { setError('שגיאה בכניסה עם Google'); setLoading(false) }
   }
 
   async function handlePhone() {
@@ -41,21 +44,6 @@ export default function LoginPage() {
     router.push('/home')
   }
 
-  async function handleJoin() {
-    if (!inviteCode) return setError('הכנס קוד הזמנה')
-    setLoading(true); setError('')
-    const family = await getFamilyByInviteCode(inviteCode)
-    if (!family) { setError('קוד הזמנה לא נמצא'); setLoading(false); return }
-    sessionStorage.setItem('pendingFamilyId', family.id)
-    setLoading(false); setTab('login')
-  }
-
-  async function handleCreate() {
-    if (!familyName.trim()) return setError('הכנס שם משפחה')
-    sessionStorage.setItem('createFamilyName', familyName)
-    setTab('login')
-  }
-
   const inp: React.CSSProperties = {
     width:'100%', padding:'0.85rem 1rem',
     background:'#f9fafb', border:'2px solid #e5e7eb',
@@ -69,7 +57,6 @@ export default function LoginPage() {
     border:'none', borderRadius:'14px', color:'white',
     fontSize:'1rem', fontWeight:700, cursor:'pointer',
     fontFamily:'inherit', boxShadow:'0 4px 16px rgba(240,122,85,.4)',
-    transition:'transform .15s',
   }
 
   return (
@@ -79,11 +66,9 @@ export default function LoginPage() {
       display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
       padding:'2rem 1.25rem', position:'relative', overflow:'hidden',
     }}>
-      {/* עיגולי רקע */}
       <div style={{position:'absolute',top:'-100px',right:'-100px',width:'320px',height:'320px',borderRadius:'50%',background:'rgba(240,122,85,0.14)',pointerEvents:'none'}}/>
       <div style={{position:'absolute',bottom:'-80px',left:'-80px',width:'260px',height:'260px',borderRadius:'50%',background:'rgba(78,155,106,0.1)',pointerEvents:'none'}}/>
 
-      {/* לוגו */}
       <div style={{textAlign:'center',marginBottom:'2rem',zIndex:10,position:'relative'}}>
         <div style={{
           width:'88px',height:'88px',
@@ -98,18 +83,8 @@ export default function LoginPage() {
         <p style={{color:'rgba(255,255,255,.5)',marginTop:'0.4rem',fontSize:'0.9rem'}}>
           עושים סדר בחגים המשפחתיים
         </p>
-        <div style={{display:'flex',gap:'0.6rem',justifyContent:'center',marginTop:'1rem',flexWrap:'wrap'}}>
-          {['📅 חגים','🧺 מי מביא מה','💡 תובנות'].map(f=>(
-            <span key={f} style={{
-              background:'rgba(255,255,255,.12)',border:'1px solid rgba(255,255,255,.18)',
-              borderRadius:'100px',padding:'0.3rem 0.8rem',
-              fontSize:'0.75rem',color:'rgba(255,255,255,.85)',backdropFilter:'blur(8px)',
-            }}>{f}</span>
-          ))}
-        </div>
       </div>
 
-      {/* כרטיס */}
       <div style={{
         width:'100%',maxWidth:'380px',
         background:'white',borderRadius:'28px',
@@ -117,13 +92,12 @@ export default function LoginPage() {
         boxShadow:'0 24px 60px rgba(0,0,0,.3)',
         zIndex:10,position:'relative',
       }}>
-        {/* טאבים */}
         {!otpSent && (
           <div style={{display:'flex',gap:'3px',background:'#f3f4f6',borderRadius:'13px',padding:'4px',marginBottom:'1.5rem'}}>
             {([['login','כניסה'],['join','הצטרפות'],['create','חדש']] as const).map(([t,l])=>(
               <button key={t} onClick={()=>{setTab(t);setError('')}} style={{
                 flex:1,padding:'0.55rem 0.2rem',borderRadius:'9px',border:'none',
-                fontSize:'0.78rem',fontWeight:700,cursor:'pointer',transition:'all .2s',
+                fontSize:'0.78rem',fontWeight:700,cursor:'pointer',
                 background:tab===t?'white':'transparent',
                 color:tab===t?'#192542':'#9ca3af',
                 boxShadow:tab===t?'0 2px 8px rgba(0,0,0,.1)':'none',
@@ -133,7 +107,6 @@ export default function LoginPage() {
           </div>
         )}
 
-        {/* LOGIN */}
         {tab==='login' && !otpSent && (
           <div style={{display:'flex',flexDirection:'column',gap:'0.75rem'}}>
             <button onClick={handleGoogle} disabled={loading} style={{
@@ -143,7 +116,6 @@ export default function LoginPage() {
               display:'flex',alignItems:'center',justifyContent:'center',gap:'0.75rem',
               fontSize:'0.95rem',fontWeight:700,color:'#192542',
               boxShadow:'0 2px 8px rgba(0,0,0,.06)',fontFamily:'inherit',
-              transition:'box-shadow .2s',
             }}>
               <svg width="20" height="20" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -151,7 +123,7 @@ export default function LoginPage() {
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
               </svg>
-              כניסה עם Google
+              {loading ? 'מתחבר...' : 'כניסה עם Google'}
             </button>
 
             <div style={{display:'flex',alignItems:'center',gap:'0.75rem',margin:'0.2rem 0'}}>
@@ -168,7 +140,6 @@ export default function LoginPage() {
           </div>
         )}
 
-        {/* OTP */}
         {otpSent && (
           <div style={{display:'flex',flexDirection:'column',gap:'0.75rem'}}>
             <div style={{textAlign:'center',marginBottom:'0.5rem'}}>
@@ -186,7 +157,6 @@ export default function LoginPage() {
           </div>
         )}
 
-        {/* JOIN */}
         {tab==='join' && (
           <div style={{display:'flex',flexDirection:'column',gap:'0.75rem'}}>
             <div style={{background:'#EBF2FF',borderRadius:'12px',padding:'0.8rem',fontSize:'0.85rem',color:'#4A82D4',fontWeight:500,textAlign:'right'}}>
@@ -195,13 +165,12 @@ export default function LoginPage() {
             <input style={{...inp,fontSize:'1.4rem',fontWeight:700,color:'#192542',textAlign:'center',letterSpacing:'0.25em'}}
               placeholder="ABCD1234" maxLength={8}
               value={inviteCode} onChange={e=>setInviteCode(e.target.value.toUpperCase())}/>
-            <button onClick={handleJoin} disabled={loading} style={{...btnOrange,background:'linear-gradient(135deg,#4A82D4,#2563eb)',boxShadow:'0 4px 16px rgba(74,130,212,.4)'}}>
-              {loading?'מחפש...':'🔍 הצטרף למשפחה'}
+            <button style={{...btnOrange,background:'linear-gradient(135deg,#4A82D4,#2563eb)'}}>
+              🔍 הצטרף למשפחה
             </button>
           </div>
         )}
 
-        {/* CREATE */}
         {tab==='create' && (
           <div style={{display:'flex',flexDirection:'column',gap:'0.75rem'}}>
             <div style={{background:'#E8F5EE',borderRadius:'12px',padding:'0.8rem',fontSize:'0.85rem',color:'#4E9B6A',fontWeight:500,textAlign:'right'}}>
@@ -209,14 +178,14 @@ export default function LoginPage() {
             </div>
             <input style={inp} placeholder="שם המשפחה (לדוגמה: משפחת לוי)"
               value={familyName} onChange={e=>setFamilyName(e.target.value)}/>
-            <button onClick={handleCreate} disabled={loading} style={{...btnOrange,background:'linear-gradient(135deg,#4E9B6A,#15803d)',boxShadow:'0 4px 16px rgba(78,155,106,.4)'}}>
-              {loading?'יוצר...':'👨‍👩‍👧‍👦 צור משפחה חדשה'}
+            <button style={{...btnOrange,background:'linear-gradient(135deg,#4E9B6A,#15803d)'}}>
+              👨‍👩‍👧‍👦 צור משפחה חדשה
             </button>
           </div>
         )}
 
         {error && (
-          <div style={{marginTop:'0.75rem',background:'#FDECEA',border:'1px solid rgba(224,101,95,.3)',borderRadius:'12px',padding:'0.75rem 1rem',fontSize:'0.875rem',fontWeight:600,color:'#E0655F',textAlign:'center'}}>
+          <div style={{marginTop:'0.75rem',background:'#FDECEA',borderRadius:'12px',padding:'0.75rem 1rem',fontSize:'0.875rem',fontWeight:600,color:'#E0655F',textAlign:'center'}}>
             {error}
           </div>
         )}
