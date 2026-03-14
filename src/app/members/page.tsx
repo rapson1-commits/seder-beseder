@@ -1,86 +1,153 @@
 'use client'
+
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import BottomNav from '@/components/layout/BottomNav'
-import { Avatar, Badge, EmptyState, CardSkeleton } from '@/components/ui'
-import { getMembers } from '@/lib/db'
 import { supabase } from '@/lib/supabase'
-import type { FamilyMember, FamilySide } from '@/types'
 
-const SIDES: (FamilySide | 'הכל')[] = ['הכל', 'אמא', 'אבא', 'בן/בת זוג', 'אחר']
+interface Member {
+  id: string
+  full_name: string
+  phone?: string
+  family_side?: string
+  relationship?: string
+  notes?: string
+}
 
 export default function MembersPage() {
   const router = useRouter()
-  const [members, setMembers] = useState<FamilyMember[]>([])
+  const [members, setMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState<string>('הכל')
-  const [search, setSearch] = useState('')
+  const [familyId, setFamilyId] = useState<string | null>(null)
 
   useEffect(() => {
-    supabase.auth.getUser().then(async ({ data: { user } }) => {
-      if (!user) { router.push('/'); return }
-      const { data: profile } = await supabase.from('user_profiles').select('family_id').eq('id', user.id).single()
-      if (!profile?.family_id) return
-      const m = await getMembers(profile.family_id)
-      setMembers(m); setLoading(false)
-    })
-  }, [router])
+    loadMembers()
+  }, [])
 
-  const filtered = members.filter(m => {
-    const matchSide = filter === 'הכל' || m.side_of_family === filter
-    const matchSearch = !search || `${m.first_name} ${m.last_name ?? ''}`.includes(search)
-    return matchSide && matchSearch
-  })
+  async function loadMembers() {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { router.push('/'); return }
+
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('family_id')
+      .eq('id', user.id)
+      .single()
+
+    if (!profile?.family_id) { router.push('/setup'); return }
+    setFamilyId(profile.family_id)
+
+    const { data } = await supabase
+      .from('family_members')
+      .select('*')
+      .eq('family_id', profile.family_id)
+      .order('full_name')
+
+    setMembers(data || [])
+    setLoading(false)
+  }
+
+  async function deleteMember(id: string, name: string) {
+    if (!confirm(`למחוק את ${name}?`)) return
+    await supabase.from('family_members').delete().eq('id', id)
+    setMembers(prev => prev.filter(m => m.id !== id))
+  }
+
+  const sideColors: Record<string, string> = {
+    'צד אבא': '#4A82D4',
+    'צד אמא': '#E0655F',
+    'בן/בת זוג': '#4E9B6A',
+  }
+
+  const avatarColors = ['#4A82D4','#4E9B6A','#F07A55','#C99A2E','#E0655F','#9B59B6']
+
+  if (loading) return (
+    <div style={{ minHeight:'100vh', background:'#192542', display:'flex', alignItems:'center', justifyContent:'center' }}>
+      <div style={{ color:'white', fontSize:'16px' }}>טוען...</div>
+    </div>
+  )
 
   return (
-    <div className="main-content page-enter">
-      {/* TOP BAR */}
-      <div className="sticky top-0 z-20 bg-cream px-4 pt-12 pb-3">
-        <div className="flex items-center justify-between mb-3">
-          <h1 className="text-xl font-extrabold">בני המשפחה</h1>
-          <button onClick={() => router.push('/members/new')}
-            className="w-9 h-9 rounded-xl bg-orange-light text-orange-DEFAULT
-                       flex items-center justify-center text-xl active:scale-90 transition-all">
-            +
-          </button>
-        </div>
-        {/* Search */}
-        <input className="fi text-sm mb-3" placeholder="🔍  חיפוש בן משפחה..."
-               value={search} onChange={e => setSearch(e.target.value)} />
-        {/* Side filter */}
-        <div className="flex gap-2 overflow-x-auto no-scrollbar">
-          {SIDES.map(s => (
-            <button key={s} onClick={() => setFilter(s)}
-              className={`chip whitespace-nowrap ${filter === s ? 'on' : ''}`}>
-              {s}
-            </button>
-          ))}
+    <div style={{ minHeight:'100vh', background:'#192542', fontFamily:'Heebo, sans-serif', direction:'rtl' }}>
+      {/* Header */}
+      <div style={{ background:'linear-gradient(135deg,#192542,#1e3a6e)', padding:'52px 20px 20px', position:'sticky', top:0, zIndex:10 }}>
+        <div style={{ maxWidth:'430px', margin:'0 auto', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+          <button onClick={() => router.push('/home')} style={{ background:'rgba(255,255,255,.1)', border:'none', borderRadius:'12px', width:'36px', height:'36px', color:'white', fontSize:'18px', cursor:'pointer' }}>→</button>
+          <h1 style={{ color:'white', fontSize:'20px', fontWeight:800 }}>בני המשפחה</h1>
+          <button
+            onClick={() => router.push('/members/new')}
+            style={{ background:'#F07A55', border:'none', borderRadius:'12px', width:'36px', height:'36px', color:'white', fontSize:'22px', cursor:'pointer', fontWeight:'bold' }}>+</button>
         </div>
       </div>
 
-      <div className="px-4 pt-2">
-        {loading ? (
-          [...Array(5)].map((_, i) => <CardSkeleton key={i} />)
-        ) : filtered.length === 0 ? (
-          <EmptyState emoji="👥" title="אין בני משפחה"
-            sub="הוסיפו את הבן משפחה הראשון"
-            action={<button className="btn-primary" onClick={() => router.push('/members/new')}>+ הוסף</button>} />
-        ) : filtered.map(m => (
-          <button key={m.id} onClick={() => router.push(`/members/${m.id}`)}
-            className="card w-full text-right flex items-center gap-3 mb-2.5 active:scale-98 transition-all">
-            <Avatar member={m} size="md" />
-            <div className="flex-1 min-w-0">
-              <p className="font-bold text-base">{m.first_name} {m.last_name ?? ''}</p>
-              <p className="text-xs text-gray-500 mt-0.5">
-                {m.side_of_family ? `${m.side_of_family} · ` : ''}{m.phone ?? ''}
-              </p>
-              {m.notes && <p className="text-xs text-gray-400 mt-0.5 truncate">{m.notes}</p>}
+      <div style={{ maxWidth:'430px', margin:'0 auto', padding:'16px 16px 100px' }}>
+        {/* Stats */}
+        <div style={{ background:'rgba(255,255,255,.06)', borderRadius:'16px', padding:'14px 20px', marginBottom:'16px', display:'flex', justifyContent:'space-between' }}>
+          <div style={{ textAlign:'center' }}>
+            <div style={{ color:'white', fontSize:'22px', fontWeight:900 }}>{members.length}</div>
+            <div style={{ color:'rgba(255,255,255,.4)', fontSize:'11px', marginTop:'2px' }}>סה"כ</div>
+          </div>
+          <div style={{ textAlign:'center' }}>
+            <div style={{ color:'white', fontSize:'22px', fontWeight:900 }}>{members.filter(m=>m.family_side==='צד אבא').length}</div>
+            <div style={{ color:'rgba(255,255,255,.4)', fontSize:'11px', marginTop:'2px' }}>צד אבא</div>
+          </div>
+          <div style={{ textAlign:'center' }}>
+            <div style={{ color:'white', fontSize:'22px', fontWeight:900 }}>{members.filter(m=>m.family_side==='צד אמא').length}</div>
+            <div style={{ color:'rgba(255,255,255,.4)', fontSize:'11px', marginTop:'2px' }}>צד אמא</div>
+          </div>
+        </div>
+
+        {/* Members list */}
+        {members.length === 0 ? (
+          <div style={{ textAlign:'center', padding:'40px 20px', color:'rgba(255,255,255,.4)' }}>
+            <div style={{ fontSize:'48px', marginBottom:'12px' }}>👥</div>
+            <p style={{ fontSize:'16px', fontWeight:600 }}>אין בני משפחה עדיין</p>
+            <p style={{ fontSize:'13px', marginTop:'6px' }}>לחץ + כדי להוסיף</p>
+          </div>
+        ) : members.map((member, i) => {
+          const initials = member.full_name?.split(' ').map(n=>n[0]).join('').slice(0,2) || '?'
+          const color = avatarColors[i % avatarColors.length]
+          const sideColor = sideColors[member.family_side || ''] || '#888'
+          return (
+            <div key={member.id} style={{ background:'rgba(255,255,255,.06)', borderRadius:'16px', padding:'14px 16px', marginBottom:'10px', display:'flex', alignItems:'center', gap:'12px', border:'1px solid rgba(255,255,255,.08)' }}>
+              {/* Avatar */}
+              <div style={{ width:'48px', height:'48px', borderRadius:'14px', background:color, display:'flex', alignItems:'center', justifyContent:'center', fontSize:'16px', fontWeight:800, color:'white', flexShrink:0 }}>
+                {initials}
+              </div>
+              {/* Info */}
+              <div style={{ flex:1, minWidth:0 }}>
+                <div style={{ color:'white', fontSize:'15px', fontWeight:700 }}>{member.full_name}</div>
+                <div style={{ display:'flex', gap:'6px', marginTop:'4px', flexWrap:'wrap' }}>
+                  {member.family_side && (
+                    <span style={{ fontSize:'11px', fontWeight:700, padding:'3px 8px', borderRadius:'100px', background:`${sideColor}22`, color:sideColor }}>
+                      {member.family_side}
+                    </span>
+                  )}
+                  {member.phone && (
+                    <span style={{ fontSize:'11px', color:'rgba(255,255,255,.4)' }}>{member.phone}</span>
+                  )}
+                </div>
+              </div>
+              {/* Actions */}
+              <div style={{ display:'flex', gap:'8px', flexShrink:0 }}>
+                <button
+                  onClick={() => router.push(`/members/${member.id}/edit`)}
+                  style={{ background:'rgba(74,130,212,.2)', border:'none', borderRadius:'10px', width:'34px', height:'34px', color:'#4A82D4', fontSize:'16px', cursor:'pointer' }}>✏️</button>
+                <button
+                  onClick={() => deleteMember(member.id, member.full_name)}
+                  style={{ background:'rgba(224,101,95,.15)', border:'none', borderRadius:'10px', width:'34px', height:'34px', color:'#E0655F', fontSize:'16px', cursor:'pointer' }}>🗑️</button>
+              </div>
             </div>
-            <span className="text-gray-300 text-lg">‹</span>
-          </button>
-        ))}
+          )
+        })}
+
+        {/* Add button */}
+        <button
+          onClick={() => router.push('/members/new')}
+          style={{ width:'100%', padding:'14px', background:'#F07A55', border:'none', borderRadius:'16px', color:'white', fontSize:'15px', fontWeight:700, cursor:'pointer', marginTop:'8px', boxShadow:'0 6px 20px rgba(240,122,85,.35)' }}>
+          + הוסף בן/בת משפחה
+        </button>
       </div>
-      <BottomNav />
     </div>
   )
 }
+
