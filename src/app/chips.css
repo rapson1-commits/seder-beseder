@@ -1,0 +1,10 @@
+/* Add to globals.css or keep separate */
+.chip {
+  @apply text-xs font-semibold px-3 py-1.5 rounded-full border cursor-pointer transition-all;
+}
+.chip.on {
+  @apply bg-navy-DEFAULT text-white border-navy-DEFAULT;
+}
+.chip:not(.on) {
+  @apply bg-white text-gray-500 border-gray-200;
+}

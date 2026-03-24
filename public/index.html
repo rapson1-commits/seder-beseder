@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>סדר בסדר – v5</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════
+   DESIGN SYSTEM TOKENS
+══════════════════════════════════════ */
+:root {
+  /* Primary – Teal */
+  --teal:     #2A9D8F;
+  --teal-d:   #1E7A6E;
+  --teal-m:   #3BB5A5;
+  --teal-l:   #A8E0D9;
+  --teal-bg:  #EAF7F5;
+
+  /* Secondary – Orange */
+  --ora:      #E76F51;
+  --ora-d:    #C4553A;
+  --ora-l:    #F4A68E;
+  --ora-bg:   #FEF0EC;
+
+  /* Accent – Amber */
+  --amb:      #E9C46A;
+  --amb-bg:   #FEF9EC;
+
+  /* Semantic */
+  --green:    #2E9E5B;
+  --green-bg: #E8F7EE;
+  --red:      #D94F3B;
+  --red-bg:   #FDECEA;
+
+  /* Neutrals */
+  --bg:       #F5F7FA;
+  --wh:       #FFFFFF;
+  --ink:      #18202C;
+  --ink2:     #3A4A5C;
+  --ink3:     #6E8298;
+  --ink4:     #A8BCC8;
+  --sand:     #DDE6ED;
+
+  /* Shadows */
+  --sh:    0 2px 12px rgba(24,32,44,.06);
+  --shm:   0 6px 24px rgba(24,32,44,.10);
+  --shl:   0 14px 48px rgba(24,32,44,.14);
+
+  --r:  16px;
+  --rs: 10px;
+  --pill: 50px;
+}
+
+/* ══════════════════════════════════════
+   BASE
+══════════════════════════════════════ */
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body {
+  font-family: 'Heebo', sans-serif;
+  background: #B8C8D8;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+/* ══════════════════════════════════════
+   PHONE SHELL
+══════════════════════════════════════ */
+.phone {
+  width: 390px; height: 844px;
+  background: var(--bg);
+  border-radius: 48px;
+  overflow: hidden;
+  position: relative;
+  box-shadow:
+    0 60px 140px rgba(0,0,0,.38),
+    0 0 0 1.5px rgba(255,255,255,.25) inset,
+    0 0 0 2.5px #90A8BC;
+}
+
+/* ══════════════════════════════════════
+   SCREENS
+══════════════════════════════════════ */
+.s {
+  position: absolute; inset: 0;
+  display: none; flex-direction: column;
+  overflow-y: auto; overflow-x: hidden;
+  scrollbar-width: none;
+  background: var(--bg);
+}
+.s::-webkit-scrollbar { display: none; }
+.s.on { display: flex; }
+
+/* ══════════════════════════════════════
+   ANIMATIONS
+══════════════════════════════════════ */
+@keyframes fadeUp  { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+@keyframes pop     { from{opacity:0;transform:scale(.82)}        to{opacity:1;transform:scale(1)}     }
+@keyframes prog    { from{width:0} to{width:100%} }
+@keyframes pulse   { 0%,100%{opacity:1} 50%{opacity:.6} }
+
+/* ══════════════════════════════════════
+   TOP BAR
+══════════════════════════════════════ */
+.topbar {
+  height: 88px; padding: 44px 20px 0;
+  display: flex; align-items: center; gap: 0;
+  flex-shrink: 0; background: var(--wh);
+  border-bottom: 1px solid var(--sand);
+  position: sticky; top: 0; z-index: 30;
+}
+.topbar-title { font-size: 17px; font-weight: 800; color: var(--ink); flex: 1; text-align: center; }
+.tb-ico {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--bg); border: none;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; cursor: pointer; flex-shrink: 0;
+}
+.tb-av {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal), var(--teal-d));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 800; color: #fff; flex-shrink: 0; cursor: pointer;
+}
+
+/* Home custom topbar */
+.home-topbar {
+  height: 88px; padding: 44px 20px 0;
+  display: flex; align-items: center;
+  flex-shrink: 0; background: var(--wh);
+  border-bottom: 1px solid var(--sand);
+  position: sticky; top: 0; z-index: 30;
+}
+.htb-notif {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--bg); border: none;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; cursor: pointer; position: relative;
+}
+.htb-notif-dot {
+  position: absolute; top: 8px; right: 8px;
+  width: 8px; height: 8px; background: var(--red);
+  border-radius: 50%; border: 2px solid var(--wh);
+}
+.htb-mid { flex: 1; text-align: center; }
+.htb-fam { font-size: 16px; font-weight: 800; color: var(--ink); }
+.htb-sub { font-size: 11px; color: var(--ink3); margin-top: 1px; }
+
+/* ══════════════════════════════════════
+   BOTTOM NAV
+══════════════════════════════════════ */
+.bnav {
+  position: sticky; bottom: 0;
+  background: var(--wh); border-top: 1px solid var(--sand);
+  display: flex; padding: 10px 0 22px;
+  flex-shrink: 0; z-index: 40; margin-top: auto;
+}
+.ni {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 3px;
+  cursor: pointer; border: none; background: none;
+  font-family: 'Heebo', sans-serif; position: relative;
+}
+.ni-ic { font-size: 22px; line-height: 1; }
+.ni-lb { font-size: 9px; font-weight: 500; color: var(--ink4); }
+.ni.on .ni-lb { color: var(--teal); font-weight: 800; }
+.ni.on .ni-ic { transform: scale(1.08); }
+.ni-badge {
+  position: absolute; top: -2px; left: calc(50% + 4px);
+  background: var(--red); color: #fff;
+  font-size: 9px; font-weight: 700;
+  min-width: 16px; height: 16px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 4px; border: 2px solid var(--wh);
+}
+
+/* ══════════════════════════════════════
+   REUSABLE ATOMS
+══════════════════════════════════════ */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px; border: none; border-radius: var(--pill);
+  font-family: 'Heebo', sans-serif; font-weight: 700; cursor: pointer; transition: .16s;
+}
+.btn-teal  { background: var(--teal); color: #fff; box-shadow: 0 8px 22px rgba(42,157,143,.3); }
+.btn-teal:active  { transform: scale(.96); }
+.btn-ora   { background: var(--ora); color: #fff; box-shadow: 0 8px 22px rgba(231,111,81,.28); }
+.btn-ora:active { transform: scale(.96); }
+.btn-out   { background: var(--wh); border: 1.5px solid var(--sand); color: var(--ink2); }
+.btn-ghost { background: var(--teal-bg); color: var(--teal); }
+.btn-lg    { padding: 16px 28px; font-size: 16px; border-radius: 14px; width: 100%; }
+.btn-md    { padding: 12px 20px; font-size: 14px; border-radius: 12px; }
+.btn-sm    { padding: 7px 14px; font-size: 12px; border-radius: var(--pill); }
+
+.card { background: var(--wh); border-radius: var(--r); box-shadow: var(--sh); padding: 18px; }
+
+.chip {
+  padding: 7px 16px; border-radius: var(--pill);
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  border: 1.5px solid var(--sand); background: var(--wh);
+  color: var(--ink3); white-space: nowrap; transition: .14s;
+}
+.chip.on { background: var(--teal); border-color: var(--teal); color: #fff; }
+
+.av {
+  border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-weight: 800; color: #fff; flex-shrink: 0;
+}
+
+.badge { padding: 3px 10px; border-radius: var(--pill); font-size: 11px; font-weight: 700; }
+.b-ok   { background: var(--green-bg); color: var(--green); }
+.b-warn { background: var(--red-bg);   color: var(--red);   }
+.b-mute { background: var(--bg);       color: var(--ink3);  }
+.b-teal { background: var(--teal-bg);  color: var(--teal);  }
+
+.sec    { padding: 16px 20px 0; }
+.sec-lb { font-size: 10.5px; font-weight: 800; color: var(--ink4); text-transform: uppercase; letter-spacing: .9px; margin-bottom: 10px; }
+
+.hs { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+.hs::-webkit-scrollbar { display: none; }
+
+.f-lb   { font-size: 13px; font-weight: 600; color: var(--ink2); margin-bottom: 5px; }
+.f-hint { font-size: 11px; color: var(--ink4); margin-top: 3px; }
+.f-in {
+  width: 100%; padding: 13px 16px;
+  border: 1.5px solid var(--sand); border-radius: var(--rs);
+  background: var(--wh); font-family: 'Heebo', sans-serif;
+  font-size: 15px; color: var(--ink); outline: none;
+  transition: .18s; direction: rtl;
+}
+.f-in:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(42,157,143,.1); }
+
+.divider { display: flex; align-items: center; gap: 10px; color: var(--ink4); font-size: 12px; }
+.divider::before,.divider::after { content: ''; flex: 1; height: 1px; background: var(--sand); }
+
+.mb14 { margin-bottom: 14px; }
+.mt8  { margin-top: 8px; }
+.mt12 { margin-top: 12px; }
+.mt16 { margin-top: 16px; }
+.mt20 { margin-top: 20px; }
+
+/* ══════════════════════════════════════
+   SPLASH
+══════════════════════════════════════ */
+#sp {
+  background: linear-gradient(168deg, #E8F7F5 0%, #BDE8E2 50%, #90D5CB 100%);
+  align-items: center; justify-content: center; text-align: center;
+}
+.sp-blob {
+  position: absolute; border-radius: 50%;
+  background: rgba(255,255,255,.18);
+}
+.sb1 { width: 500px; height: 500px; top: -160px; left: -120px; }
+.sb2 { width: 340px; height: 340px; bottom: -120px; right: -90px; }
+.sb3 { width: 200px; height: 200px; top: 200px; right: -60px; }
+.sp-icon {
+  width: 100px; height: 100px;
+  background: linear-gradient(135deg, var(--teal), var(--teal-d));
+  border-radius: 28px; margin: 0 auto 22px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 50px; box-shadow: 0 20px 60px rgba(42,157,143,.45);
+  animation: pop .6s .2s cubic-bezier(.34,1.56,.64,1) both;
+}
+.sp-name { font-size: 46px; font-weight: 900; color: var(--ink); letter-spacing: -2px; animation: fadeUp .5s .5s ease both; }
+.sp-tag  { font-size: 15px; color: var(--ink2); margin-top: 8px; animation: fadeUp .4s .7s ease both; }
+.sp-bar  { width: 52px; height: 3px; background: rgba(42,157,143,.2); border-radius: 2px; margin: 60px auto 0; overflow: hidden; animation: fadeUp .3s .9s both; }
+.sp-prog { height: 100%; background: var(--teal); border-radius: 2px; animation: prog 2.4s 1s ease forwards; }
+
+/* ══════════════════════════════════════
+   LOGIN
+══════════════════════════════════════ */
+#login { background: var(--wh); padding: 0 22px 36px; align-items: stretch; }
+.login-top { padding: 56px 0 28px; text-align: center; }
+.login-ico  {
+  width: 64px; height: 64px;
+  background: linear-gradient(135deg, var(--teal), var(--teal-d));
+  border-radius: 18px; margin: 0 auto 18px;
+  display: flex; align-items: center; justify-content: center; font-size: 30px;
+}
+.login-h { font-size: 30px; font-weight: 900; color: var(--ink); letter-spacing: -1px; }
+.login-p { font-size: 13px; color: var(--ink3); margin-top: 7px; line-height: 1.7; }
+.auth-btn {
+  display: flex; align-items: center; gap: 12px;
+  padding: 15px 18px; border-radius: var(--rs);
+  border: 1.5px solid var(--sand); background: var(--wh);
+  font-family: 'Heebo', sans-serif; font-size: 15px; font-weight: 500;
+  color: var(--ink); cursor: pointer; width: 100%; transition: .16s; text-align: right;
+}
+
+
+/* ══════════════════════════════════════
+   ONBOARDING
+══════════════════════════════════════ */
+#ob { overflow: hidden; }
+.ob-track  { display: flex; transition: transform .4s cubic-bezier(.4,0,.2,1); }
+.ob-slide  {
+  width: 390px; flex-shrink: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 60px 36px 0; text-align: center; min-height: 680px;
+}
+.ob-illo   { width: 196px; height: 196px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 88px; margin-bottom: 30px; }
+.ob-h      { font-size: 24px; font-weight: 800; color: var(--ink); margin-bottom: 12px; line-height: 1.2; }
+.ob-p      { font-size: 14px; color: var(--ink3); line-height: 1.7; }
+.ob-footer { padding: 24px 24px 44px; display: flex; flex-direction: column; align-items: center; gap: 18px; flex-shrink: 0; }
+.ob-dots   { display: flex; gap: 8px; }
+.ob-dot    { width: 7px; height: 7px; border-radius: 4px; background: var(--sand); transition: .3s; }
+.ob-dot.on { width: 22px; background: var(--teal); }
+
+/* ══════════════════════════════════════
+   CHOOSE FAM
+══════════════════════════════════════ */
+#cf { align-items: center; justify-content: center; padding: 36px 22px; }
+.cf-h  { font-size: 26px; font-weight: 800; color: var(--ink); text-align: center; margin-bottom: 8px; }
+.cf-p  { font-size: 13px; color: var(--ink3); text-align: center; margin-bottom: 30px; }
+.cf-card {
+  background: var(--wh); border-radius: var(--r);
+  border: 2px solid var(--sand); padding: 26px 22px;
+  width: 100%; text-align: center; cursor: pointer;
+  transition: .18s; box-shadow: var(--sh);
+}
+
+.cf-ic     { font-size: 44px; margin-bottom: 12px; }
+.cf-card-h { font-size: 18px; font-weight: 700; color: var(--ink); }
+.cf-card-p { font-size: 13px; color: var(--ink3); margin-top: 5px; line-height: 1.5; }
+
+/* ══════════════════════════════════════
+   HOME SCREEN
+══════════════════════════════════════ */
+
+/* Hero card – teal gradient */
+.hero-card {
+  background: linear-gradient(135deg, var(--teal), var(--teal-m), #54C6BA);
+  border-radius: 20px; padding: 24px;
+  color: #fff; position: relative; overflow: hidden;
+  cursor: pointer; box-shadow: 0 12px 36px rgba(42,157,143,.38);
+  transition: .18s;
+}
+.hero-card:active { transform: scale(.98); }
+.hc-glow { position: absolute; border-radius: 50%; }
+.hg1 { width: 240px; height: 240px; background: rgba(255,255,255,.08); top: -70px; left: -70px; }
+.hg2 { width: 160px; height: 160px; background: rgba(255,255,255,.05); bottom: -50px; right: -40px; }
+.hc-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,.2); border-radius: var(--pill);
+  padding: 5px 12px; font-size: 11px; font-weight: 700; margin-bottom: 14px;
+}
+.hc-title { font-size: 26px; font-weight: 900; letter-spacing: -.5px; margin-bottom: 8px; line-height: 1.1; }
+.hc-sub   { font-size: 13px; opacity: .85; line-height: 1.55; margin-bottom: 18px; }
+.hc-btn   {
+  background: rgba(255,255,255,.22); border: 1.5px solid rgba(255,255,255,.38);
+  color: #fff; padding: 11px 22px; border-radius: var(--pill);
+  font-family: 'Heebo', sans-serif; font-size: 14px; font-weight: 700;
+  cursor: pointer; display: inline-block;
+}
+
+/* Quick actions grid – each cell has its own tinted background */
+.qa-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
+.qa {
+  background: var(--wh); border-radius: var(--r);
+  padding: 18px 14px; display: flex; align-items: center; gap: 14px;
+  box-shadow: var(--sh); cursor: pointer; border: none;
+  font-family: 'Heebo', sans-serif; transition: .16s;
+}
+.qa:active { transform: scale(.96); }
+.qa-pip {
+  width: 46px; height: 46px; border-radius: 13px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; flex-shrink: 0;
+}
+.qa-info {}
+.qa-lb { font-size: 14px; font-weight: 700; color: var(--ink); }
+.qa-sub { font-size: 11px; color: var(--ink3); margin-top: 2px; }
+
+/* Insight */
+.insight {
+  background: var(--wh); border-radius: var(--r);
+  padding: 16px; box-shadow: var(--sh);
+  display: flex; gap: 13px; align-items: flex-start;
+}
+.ins-pip {
+  width: 40px; height: 40px; border-radius: 11px;
+  background: var(--amb-bg); display: flex;
+  align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.ins-txt { font-size: 13px; color: var(--ink2); line-height: 1.55; }
+.ins-b   { font-weight: 700; color: var(--ink); }
+
+/* Pending */
+.pend { background: var(--wh); border-radius: var(--r); padding: 16px; box-shadow: var(--sh); }
+.pend-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.pend-t { font-size: 14px; font-weight: 700; color: var(--ink); }
+.pend-ct { background: var(--ora); color: #fff; border-radius: var(--pill); padding: 2px 9px; font-size: 11px; font-weight: 700; }
+.pp   { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.pp-av{ position: relative; }
+.pp-dot { position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; background: #F5A623; border-radius: 50%; border: 2px solid var(--wh); }
+.pp-nm { font-size: 10px; color: var(--ink4); }
+
+/* Mini events */
+.ev-mini {
+  background: var(--wh); border-radius: 14px; padding: 15px;
+  min-width: 150px; box-shadow: var(--sh); cursor: pointer;
+  flex-shrink: 0; transition: .16s;
+}
+.ev-mini:active { transform: scale(.95); }
+.em-ic  { font-size: 28px; margin-bottom: 8px; }
+.em-h   { font-size: 13px; font-weight: 700; color: var(--ink); }
+.em-s   { font-size: 11px; color: var(--ink3); margin-top: 2px; }
+.em-tag { display: inline-block; background: var(--teal-bg); color: var(--teal); border-radius: 6px; padding: 3px 8px; font-size: 10px; font-weight: 600; margin-top: 7px; }
+
+/* ══════════════════════════════════════
+   FAMILY
+══════════════════════════════════════ */
+.fc {
+  background: var(--wh); border-radius: var(--r);
+  padding: 14px 16px; display: flex; align-items: center;
+  gap: 14px; box-shadow: var(--sh); cursor: pointer; transition: .16s;
+}
+.fc:active { transform: scale(.98); }
+.fc-info { flex: 1; }
+.fc-nm   { font-size: 15px; font-weight: 700; color: var(--ink); }
+.fc-side { font-size: 11px; color: var(--ink4); margin-top: 1px; }
+.fc-note { font-size: 12px; color: var(--ink3); margin-top: 5px; font-style: italic; }
+
+/* FAB */
+.fab-wrap { position: relative; display: flex; justify-content: flex-end; padding: 0 20px 14px; flex-shrink: 0; }
+.fab {
+  background: linear-gradient(135deg, var(--teal), var(--teal-d));
+  color: #fff; border: none; border-radius: var(--pill);
+  padding: 13px 22px; font-family: 'Heebo', sans-serif;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  box-shadow: 0 8px 26px rgba(42,157,143,.38);
+  display: flex; align-items: center; gap: 8px;
+}
+.fab:active { transform: scale(.95); }
+.fab-menu {
+  position: absolute; bottom: 58px; left: 0;
+  background: var(--wh); border-radius: var(--r);
+  box-shadow: var(--shl); padding: 8px; min-width: 200px;
+  display: none; flex-direction: column; gap: 2px;
+}
+.fab-menu.open { display: flex; animation: pop .18s ease; }
+.fmi {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 16px; border-radius: var(--rs);
+  cursor: pointer; font-size: 14px; font-weight: 600; color: var(--ink2);
+  transition: .14s;
+}
+
+.fmi-ic { font-size: 22px; }
+
+/* ══════════════════════════════════════
+   EVENTS LIST
+══════════════════════════════════════ */
+.ev-card { background: var(--wh); border-radius: var(--r); overflow: hidden; box-shadow: var(--sh); cursor: pointer; transition: .16s; }
+.ev-card:active { transform: scale(.98); }
+.ev-hdr  { padding: 16px 16px 12px; display: flex; align-items: center; gap: 14px; }
+.ev-em   { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+.ev-nm   { font-size: 16px; font-weight: 800; color: var(--ink); }
+.ev-meta { font-size: 12px; color: var(--ink3); margin-top: 3px; }
+.ev-stats{ display: flex; align-items: center; gap: 10px; margin-top: 5px; }
+.ev-stat { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--ink4); }
+.ev-foot { padding: 10px 16px; background: var(--bg); display: flex; align-items: center; justify-content: space-between; }
+.ev-avs  { display: flex; }
+.ev-av   { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--wh); font-size: 10px; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: center; margin-left: -7px; }
+
+/* ══════════════════════════════════════
+   EVENT DETAIL
+══════════════════════════════════════ */
+.ed-hero { position: relative; flex-shrink: 0; }
+.ed-banner {
+  height: 210px; display: flex; flex-direction: column;
+  justify-content: flex-end; padding: 52px 22px 22px;
+  position: relative;
+}
+.ed-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.55), transparent); border-radius: 0; }
+.ed-back {
+  position: absolute; top: 52px; right: 18px;
+  background: rgba(255,255,255,.2); border: none; border-radius: 50%;
+  width: 38px; height: 38px; display: flex; align-items: center;
+  justify-content: center; cursor: pointer; font-size: 20px;
+  backdrop-filter: blur(6px); color: #fff; z-index: 2;
+}
+.ed-title { font-size: 26px; font-weight: 900; color: #fff; letter-spacing: -.5px; position: relative; z-index: 1; }
+.ed-sub   { font-size: 14px; color: rgba(255,255,255,.82); margin-top: 4px; position: relative; z-index: 1; }
+.info-row { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--bg); }
+.info-row:last-child { border-bottom: none; }
+.ir-ic { font-size: 18px; width: 22px; text-align: center; }
+.ir-l  { font-size: 13px; color: var(--ink3); }
+.ir-v  { font-size: 13px; font-weight: 600; color: var(--ink); margin-right: auto; }
+.part-row { display: flex; align-items: center; gap: 12px; padding: 11px 16px; border-bottom: 1px solid var(--bg); cursor: pointer; }
+.part-row:last-child { border-bottom: none; }
+.gal { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; }
+.gal-item { aspect-ratio: 1; border-radius: 10px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; }
+
+/* ══════════════════════════════════════
+   CREATE EVENT WIZARD
+══════════════════════════════════════ */
+.wiz-bar  { height: 3px; background: var(--sand); flex-shrink: 0; }
+.wiz-fill { height: 100%; background: linear-gradient(90deg, var(--teal), var(--teal-m)); border-radius: 2px; transition: .4s; }
+.wiz-top  { padding: 14px 20px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; border-bottom: 1px solid var(--bg); }
+.wiz-back { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--ink2); }
+.wiz-ttl  { font-size: 17px; font-weight: 800; color: var(--ink); }
+.wiz-step { font-size: 11px; color: var(--ink4); margin-right: auto; }
+.ws       { display: none; flex: 1; overflow-y: auto; scrollbar-width: none; padding: 8px 0; }
+.ws.on    { display: block; }
+.ws::-webkit-scrollbar { display: none; }
+.type-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; padding: 12px 20px 20px; }
+.type-btn {
+  background: var(--wh); border: 2px solid var(--sand); border-radius: 14px;
+  padding: 16px 6px; display: flex; flex-direction: column; align-items: center;
+  gap: 8px; cursor: pointer; transition: .16s; font-family: 'Heebo', sans-serif;
+}
+.type-btn:hover, .type-btn.sel { border-color: var(--teal); background: var(--teal-bg); }
+.t-ic { font-size: 30px; }
+.t-lb { font-size: 12px; font-weight: 600; color: var(--ink2); }
+.m-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--bg); }
+.m-row:last-child { border-bottom: none; }
+.m-nm  { font-size: 14px; font-weight: 600; color: var(--ink); flex: 1; }
+.m-sub { font-size: 11px; color: var(--ink4); }
+.chk  { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--sand); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: .16s; font-size: 12px; color: transparent; }
+.chk.on { background: var(--teal); border-color: var(--teal); color: #fff; }
+.st   { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 5px; }
+.st-o { padding: 5px 10px; border-radius: var(--pill); font-size: 10px; font-weight: 600; border: 1.5px solid var(--sand); background: var(--wh); cursor: pointer; color: var(--ink3); }
+.st-o.on { background: var(--teal); border-color: var(--teal); color: #fff; }
+
+/* ══════════════════════════════════════
+   PROFILE
+══════════════════════════════════════ */
+.prof-hero {
+  background: linear-gradient(165deg, var(--teal-bg), #D4F0EC);
+  padding: 88px 0 28px;
+  display: flex; flex-direction: column; align-items: center; position: relative;
+}
+.prof-back {
+  position: absolute; top: 52px; right: 18px;
+  background: rgba(255,255,255,.7); border: none; border-radius: 50%;
+  width: 38px; height: 38px; display: flex; align-items: center;
+  justify-content: center; cursor: pointer; font-size: 18px; backdrop-filter: blur(4px);
+}
+.prof-av  { width: 90px; height: 90px; border-radius: 50%; border: 4px solid var(--wh); box-shadow: 0 8px 24px rgba(0,0,0,.1); font-size: 36px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
+.prof-nm  { font-size: 22px; font-weight: 900; color: var(--ink); margin-top: 12px; }
+.prof-tag { display: inline-flex; align-items: center; gap: 4px; background: var(--teal-bg); color: var(--teal); border-radius: var(--pill); padding: 4px 12px; font-size: 12px; font-weight: 700; margin-top: 8px; }
+.prof-stats { display: flex; background: var(--wh); border-radius: var(--r); margin: -14px 20px 0; box-shadow: var(--sh); overflow: hidden; }
+.ps  { flex: 1; padding: 14px; text-align: center; border-left: 1px solid var(--bg); }
+.ps:last-child { border-left: none; }
+.ps-n { font-size: 22px; font-weight: 900; color: var(--teal); }
+.ps-l { font-size: 10px; color: var(--ink4); margin-top: 2px; }
+.prof-sec { background: var(--wh); border-radius: var(--r); margin: 12px 20px 0; overflow: hidden; box-shadow: var(--sh); }
+.pst { font-size: 11px; font-weight: 700; color: var(--ink4); text-transform: uppercase; letter-spacing: .6px; padding: 13px 16px 10px; border-bottom: 1px solid var(--bg); }
+.p-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--bg); }
+.p-row:last-child { border-bottom: none; }
+.p-ic  { font-size: 17px; width: 22px; text-align: center; }
+.p-l   { font-size: 13px; color: var(--ink3); }
+.p-v   { font-size: 13px; font-weight: 600; color: var(--ink); margin-right: auto; }
+.h-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--bg); }
+.h-row:last-child { border-bottom: none; }
+.h-ic  { font-size: 20px; }
+.h-inf { flex: 1; }
+.h-t   { font-size: 13px; font-weight: 600; color: var(--ink); }
+.h-s   { font-size: 11px; color: var(--ink4); margin-top: 1px; }
+
+/* ══════════════════════════════════════
+   HISTORY
+══════════════════════════════════════ */
+.tabs { display: flex; background: var(--bg); border-radius: 12px; padding: 3px; margin: 12px 20px; flex-shrink: 0; }
+.tab  { flex: 1; padding: 8px 4px; border-radius: 9px; border: none; background: none; font-family: 'Heebo', sans-serif; font-size: 11px; font-weight: 600; color: var(--ink3); cursor: pointer; transition: .16s; }
+.tab.on { background: var(--wh); color: var(--teal); box-shadow: 0 2px 8px rgba(0,0,0,.08); font-weight: 800; }
+.tl  { padding: 0 20px 20px; }
+.tl-yr { font-size: 10.5px; font-weight: 800; color: var(--ink4); text-transform: uppercase; letter-spacing: 1px; margin: 14px 0 10px; }
+.tl-item { display: flex; gap: 14px; margin-bottom: 12px; position: relative; cursor: pointer; }
+.tl-item:not(:last-of-type)::before { content: ''; position: absolute; right: 17px; top: 34px; width: 2px; height: calc(100% + 12px); background: var(--sand); }
+.tl-dot  { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; border: 3px solid var(--bg); box-shadow: 0 2px 8px rgba(0,0,0,.08); z-index: 1; }
+.tl-cont { background: var(--wh); border-radius: 12px; padding: 12px 14px; flex: 1; box-shadow: var(--sh); }
+.tl-t    { font-size: 14px; font-weight: 700; color: var(--ink); }
+.tl-s    { font-size: 12px; color: var(--ink3); margin-top: 3px; }
+
+/* ══════════════════════════════════════
+   PLANNING
+══════════════════════════════════════ */
+.plan-banner { background: linear-gradient(155deg, #17302C, #2A6055); padding: 52px 22px 28px; color: #fff; flex-shrink: 0; position: relative; }
+.pb-back { position: absolute; top: 52px; right: 18px; background: rgba(255,255,255,.14); border: none; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; color: #fff; }
+.ai-card { background: var(--wh); border-radius: var(--r); padding: 18px; box-shadow: var(--sh); margin-bottom: 10px; }
+.ai-hdr  { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.ai-pip  { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.ai-ttl  { font-size: 14px; font-weight: 700; color: var(--ink); }
+.ai-row  { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--bg); }
+.ai-row:last-child { border-bottom: none; }
+.ai-bul  { width: 5px; height: 5px; border-radius: 50%; background: var(--teal); margin-top: 6px; flex-shrink: 0; }
+.ai-txt  { font-size: 13px; color: var(--ink3); line-height: 1.5; }
+.rec { background: var(--teal-bg); border: 1.5px solid var(--teal-l); border-radius: var(--r); padding: 18px; margin-bottom: 10px; }
+.pa { background: var(--wh); border: 1.5px solid var(--sand); border-radius: var(--rs); padding: 15px 18px; display: flex; align-items: center; gap: 14px; font-family: 'Heebo', sans-serif; font-size: 14px; font-weight: 500; color: var(--ink); cursor: pointer; box-shadow: var(--sh); transition: .16s; width: 100%; text-align: right; margin-bottom: 9px; }
+
+.pa-ic { font-size: 20px; }
+
+/* ══════════════════════════════════════
+   GALLERY
+══════════════════════════════════════ */
+.gal-full { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; padding: 0 20px 20px; }
+.gf { aspect-ratio: 1; border-radius: 10px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; transition: .14s; }
+
+
+/* ══════════════════════════════════════
+   NOTIFICATIONS
+══════════════════════════════════════ */
+.notif { background: var(--wh); border-radius: var(--rs); padding: 14px 16px; display: flex; align-items: flex-start; gap: 12px; box-shadow: var(--sh); cursor: pointer; margin-bottom: 10px; transition: .14s; }
+.notif.unread { border-right: 3px solid var(--teal); }
+.notif-ic { font-size: 22px; width: 28px; flex-shrink: 0; }
+.notif-t  { font-size: 13.5px; font-weight: 600; color: var(--ink); line-height: 1.4; }
+.notif-s  { font-size: 12px; color: var(--ink4); margin-top: 3px; }
+
+/* ══════════════════════════════════════
+   MORE / SETTINGS
+══════════════════════════════════════ */
+.more-sec { background: var(--wh); border-radius: var(--r); overflow: hidden; box-shadow: var(--sh); margin-bottom: 12px; }
+.more-row { display: flex; align-items: center; gap: 14px; padding: 15px 18px; border-bottom: 1px solid var(--bg); cursor: pointer; transition: .14s; }
+.more-row:last-child { border-bottom: none; }
+.more-row:active { background: var(--teal-bg); }
+.mr-pip  { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.mr-inf  { flex: 1; }
+.mr-t    { font-size: 14px; font-weight: 600; color: var(--ink); }
+.mr-s    { font-size: 11px; color: var(--ink3); margin-top: 1px; }
+.mr-arr  { color: var(--ink4); font-size: 16px; }
+.mr-badge { background: var(--red); color: #fff; border-radius: var(--pill); padding: 2px 9px; font-size: 11px; font-weight: 700; }
+.set-row { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--bg); cursor: pointer; }
+.set-row:last-child { border-bottom: none; }
+.set-row:active { background: var(--teal-bg); }
+.sr-ic   { font-size: 20px; width: 24px; text-align: center; }
+.sr-lb   { font-size: 14px; color: var(--ink); flex: 1; }
+.sr-arr  { color: var(--ink4); }
+.tgl     { width: 44px; height: 24px; background: var(--teal); border-radius: 12px; position: relative; cursor: pointer; flex-shrink: 0; }
+.tgl::after { content: ''; position: absolute; width: 18px; height: 18px; background: #fff; border-radius: 50%; top: 3px; right: 3px; transition: .2s; box-shadow: 0 1px 4px rgba(0,0,0,.2); }
+.tgl.off { background: var(--sand); }
+.tgl.off::after { right: auto; left: 3px; }
+
+
+@media (hover: hover) {
+  .auth-btn:hover { background: var(--teal-bg); border-color: var(--teal-l); }
+  .cf-card:hover { border-color: var(--teal-l); background: var(--teal-bg); }
+  .fmi:hover { background: var(--teal-bg); }
+  .pa:hover { background: var(--teal-bg); }
+  .gf:hover { transform: scale(.96); }
+}
+
+/* Misc create */
+.photo-up { width: 76px; height: 76px; border-radius: 50%; background: var(--teal-bg); border: 2px dashed var(--teal-l); display: flex; align-items: center; justify-content: center; font-size: 26px; cursor: pointer; flex-shrink: 0; }
+.invite-prev { background: var(--teal-bg); border: 1.5px solid var(--teal-l); border-radius: var(--r); padding: 20px; text-align: center; margin: 16px 0; }
+</style>
+</head>
+<body>
+<div class="phone">
+
+<!-- ████ SPLASH ████ -->
+<div class="s on" id="sp">
+  <div class="sp-blob sb1"></div>
+  <div class="sp-blob sb2"></div>
+  <div class="sp-blob sb3"></div>
+  <div style="position:relative;z-index:2;text-align:center;">
+    <div class="sp-icon">🏡</div>
+    <div class="sp-name">סדר בסדר</div>
+    <div class="sp-tag">עושים סדר בחגים המשפחתיים</div>
+    <div class="sp-bar"><div class="sp-prog"></div></div>
+  </div>
+</div>
+
+<!-- ████ LOGIN ████ -->
+<div class="s" id="login">
+  <div class="login-top">
+    <div class="login-ico">🏡</div>
+    <div class="login-h">ברוכים הבאים</div>
+    <div class="login-p">כל החגים, כל האנשים,<br>כל הזיכרונות – במקום אחד</div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:10px;">
+    <button class="auth-btn" onclick="go('ob')">🔍 <span style="flex:1;">המשך עם גוגל</span></button>
+    <button class="auth-btn" onclick="go('ob')">🍎 <span style="flex:1;">המשך עם אפל</span></button>
+    <button class="auth-btn" onclick="go('ob')">📱 <span style="flex:1;">המשך עם טלפון</span></button>
+    <div class="divider">או</div>
+    <button class="btn btn-teal btn-lg" onclick="go('createfam')">צור משפחה חדשה</button>
+    <button class="btn btn-out btn-lg" onclick="go('joinfam')" style="border-radius:14px;">הצטרף למשפחה קיימת</button>
+  </div>
+  <div style="text-align:center;font-size:11px;color:var(--ink4);margin-top:auto;padding:18px 0 0;line-height:1.6;">🔒 רק בני המשפחה שתבחרו יוכלו לצפות ולעדכן</div>
+</div>
+
+<!-- ████ ONBOARDING ████ -->
+<div class="s" id="ob" style="justify-content:space-between;">
+  <div style="overflow:hidden;flex:1;">
+    <div class="ob-track" id="ob-track">
+      <div class="ob-slide"><div class="ob-illo" style="background:linear-gradient(135deg,var(--teal-bg),#B0E8E2);">📅</div><div class="ob-h">זוכרים איפה חגגתם</div><div class="ob-p">שומרים היסטוריה של כל חג ואירוע משפחתי בלי לשכוח שום פרט.</div></div>
+      <div class="ob-slide"><div class="ob-illo" style="background:linear-gradient(135deg,var(--ora-bg),#FAC8B8);">👨‍👩‍👧‍👦</div><div class="ob-h">רואים עם מי הייתם</div><div class="ob-p">יודעים מי הגיע, מי לא הגיע, ואצל מי חגגתם בכל פעם.</div></div>
+      <div class="ob-slide"><div class="ob-illo" style="background:linear-gradient(135deg,var(--amb-bg),#FAEAB0);">⚖️</div><div class="ob-h">מתכננים בלי בלגן</div><div class="ob-p">האפליקציה עוזרת לכם להחליט איפה עושים את החג הבא בהוגנות.</div></div>
+      <div class="ob-slide"><div class="ob-illo" style="background:linear-gradient(135deg,#E3F2FD,#BBDEFB);">📸</div><div class="ob-h">שומרים גם רגעים יפים</div><div class="ob-p">מוסיפים תמונות וזיכרונות לכל חג — אלבום משפחתי חי לדורות.</div></div>
+    </div>
+  </div>
+  <div class="ob-footer">
+    <div class="ob-dots" id="ob-dots"><div class="ob-dot on"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
+    <button class="btn btn-teal btn-lg" id="ob-btn" onclick="obNext()">הבא</button>
+    <button style="font-size:13px;color:var(--ink4);cursor:pointer;background:none;border:none;font-family:'Heebo',sans-serif;" onclick="go('cf')">דלג</button>
+  </div>
+</div>
+
+<!-- ████ CHOOSE FAM ████ -->
+<div class="s" id="cf">
+  <div class="cf-h">איך נרצה להתחיל?</div>
+  <div class="cf-p">בחרו את הדרך שמתאימה לכם</div>
+  <div style="display:flex;flex-direction:column;gap:14px;width:100%;">
+    <div class="cf-card" onclick="go('createfam')"><div class="cf-ic">🏡</div><div class="cf-card-h">צור משפחה חדשה</div><div class="cf-card-p">פתחו מקום חדש למשפחה שלכם והזמינו את כולם</div></div>
+    <div class="cf-card" onclick="go('joinfam')"><div class="cf-ic">🔑</div><div class="cf-card-h">הצטרף למשפחה קיימת</div><div class="cf-card-p">יש לכם קוד הזמנה? הצטרפו בלחיצה</div></div>
+  </div>
+  <div style="font-size:13px;color:var(--ink3);margin-top:20px;text-align:center;">לא בטוחים? <span style="color:var(--teal);font-weight:600;cursor:pointer;">קראו כאן</span></div>
+</div>
+
+<!-- ████ CREATE FAM ████ -->
+<div class="s" id="createfam">
+  <div class="topbar"><button class="tb-ico" onclick="go('cf')">←</button><div class="topbar-title">יצירת משפחה חדשה</div><div style="width:36px;"></div></div>
+  <div style="padding:18px 22px;flex:1;overflow-y:auto;scrollbar-width:none;">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;"><div class="photo-up">📷</div><div><div class="f-lb">תמונת משפחה</div><div class="f-hint">אפשר להוסיף אחר כך</div></div></div>
+    <div class="mb14"><div class="f-lb">שם המשפחה</div><input class="f-in" placeholder='למשל: "משפחת רפסון"'></div>
+    <div class="mb14"><div class="f-lb">תיאור קצר (לא חובה)</div><input class="f-in" placeholder="כמה מילים על הקבוצה"></div>
+  </div>
+  <div style="padding:0 22px 40px;"><button class="btn btn-teal btn-lg" onclick="go('home')">צור משפחה</button></div>
+</div>
+
+<!-- ████ JOIN FAM ████ -->
+<div class="s" id="joinfam">
+  <div class="topbar"><button class="tb-ico" onclick="go('cf')">←</button><div class="topbar-title">הצטרפות למשפחה</div><div style="width:36px;"></div></div>
+  <div style="padding:20px 22px;">
+    <div class="f-lb">קוד הזמנה</div>
+    <input class="f-in mt8" placeholder="RAPSON26" style="text-align:center;font-size:26px;font-weight:900;letter-spacing:6px;">
+    <div class="invite-prev">
+      <div style="font-size:12px;color:var(--ink3);margin-bottom:10px;">הוזמנת להצטרף אל</div>
+      <div class="av" style="width:56px;height:56px;font-size:22px;margin:0 auto 10px;background:linear-gradient(135deg,var(--teal),var(--teal-d));">ר</div>
+      <div style="font-size:18px;font-weight:700;color:var(--ink);">משפחת רפסון</div>
+      <div style="font-size:13px;color:var(--ink3);margin-top:4px;">הוזמנת על ידי אופיר רפסון</div>
+    </div>
+    <button class="btn btn-teal btn-lg" onclick="go('home')">הצטרף למשפחה</button>
+  </div>
+</div>
+
+<!-- ████ HOME ████ -->
+<div class="s" id="home" style="padding-bottom:0;">
+  <!-- Top bar: notif | family name | avatar -->
+  <div class="home-topbar">
+    <button class="htb-notif" onclick="go('notifs')">
+      🔔<div class="htb-notif-dot"></div>
+    </button>
+    <div class="htb-mid">
+      <div class="htb-fam">משפחת רפסון</div>
+      <div class="htb-sub">שלום, אופיר 👋</div>
+    </div>
+    <div class="av tb-av" onclick="go('profile')" style="background:linear-gradient(135deg,var(--teal),var(--teal-d));width:36px;height:36px;font-size:14px;">א</div>
+  </div>
+
+  <!-- Hero card – teal gradient -->
+  <div class="sec" style="padding-top:16px;">
+    <div class="hero-card" onclick="go('planning')">
+      <div class="hc-glow hg1"></div><div class="hc-glow hg2"></div>
+      <div class="hc-pill">📅 עוד 34 יום</div>
+      <div class="hc-title">פסח 2026 מתקרב</div>
+      <div class="hc-sub">בשנה שעברה חגגתם אצל סבתא לאה<br>עדיין לא נקבע מארח לשנה הזו</div>
+      <button class="hc-btn">תכנן את החג הבא ←</button>
+    </div>
+  </div>
+
+  <!-- Quick actions: 2×2 colored grid -->
+  <div class="sec mt16">
+    <div class="qa-grid">
+      <button class="qa" onclick="go('createevent')">
+        <div class="qa-pip" style="background:var(--teal-bg);">📅</div>
+        <div class="qa-info"><div class="qa-lb">הוסף חג</div><div class="qa-sub">אירוע חדש</div></div>
+      </button>
+      <button class="qa" onclick="go('addfam')">
+        <div class="qa-pip" style="background:var(--green-bg);">👨‍👩‍👧</div>
+        <div class="qa-info"><div class="qa-lb">הוסף בן משפחה</div><div class="qa-sub">הוסף לרשימה</div></div>
+      </button>
+      <button class="qa" onclick="navTo('history')">
+        <div class="qa-pip" style="background:var(--amb-bg);">📜</div>
+        <div class="qa-info"><div class="qa-lb">היסטוריה</div><div class="qa-sub">כל האירועים</div></div>
+      </button>
+      <button class="qa" onclick="go('gallery')">
+        <div class="qa-pip" style="background:#F0EEFF;">📷</div>
+        <div class="qa-info"><div class="qa-lb">תמונות</div><div class="qa-sub">גלריה משפחתית</div></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Insight -->
+  <div class="sec mt16">
+    <div class="sec-lb">תובנה</div>
+    <div class="insight">
+      <div class="ins-pip">💡</div>
+      <div class="ins-txt"><span class="ins-b">משפחת האם אירחה 3 פעמים ברצף.</span><br>רוני לא השתתפה בשני האירועים האחרונים</div>
+    </div>
+  </div>
+
+  <!-- Pending -->
+  <div class="sec mt16">
+    <div class="sec-lb">עדיין לא אישרו</div>
+    <div class="pend">
+      <div class="pend-h"><div class="pend-t">פסח 2026</div><div class="pend-ct">3 ממתינים</div></div>
+      <div style="display:flex;gap:16px;">
+        <div class="pp"><div class="pp-av av" style="width:42px;height:42px;background:var(--teal);font-size:16px;font-weight:800;">ר<div class="pp-dot"></div></div><div class="pp-nm">רוני</div></div>
+        <div class="pp"><div class="pp-av av" style="width:42px;height:42px;background:var(--ora);font-size:16px;font-weight:800;">ד<div class="pp-dot"></div></div><div class="pp-nm">דוד</div></div>
+        <div class="pp"><div class="pp-av av" style="width:42px;height:42px;background:var(--amb);font-size:16px;font-weight:800;color:var(--ink);">מ<div class="pp-dot"></div></div><div class="pp-nm">מירי</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent events -->
+  <div class="sec mt16" style="padding-bottom:16px;">
+    <div class="sec-lb">אירועים אחרונים</div>
+    <div class="hs">
+      <div class="ev-mini" onclick="go('evdetail')"><div class="em-ic">🍷</div><div class="em-h">פסח 2025</div><div class="em-s">אצל סבתא לאה</div><div class="em-tag">14 משתתפים</div></div>
+      <div class="ev-mini" onclick="go('evdetail')"><div class="em-ic">🍎</div><div class="em-h">ראש השנה 2025</div><div class="em-s">אצל אבי ויעל</div><div class="em-tag">10 משתתפים</div></div>
+      <div class="ev-mini" onclick="go('evdetail')"><div class="em-ic">🌿</div><div class="em-h">סוכות 2025</div><div class="em-s">חופשה בצפון</div><div class="em-tag">8 משתתפים</div></div>
+    </div>
+  </div>
+
+  <!-- FAB -->
+  <div class="fab-wrap">
+    <div style="position:relative;">
+      <div class="fab-menu" id="hfab">
+        <div class="fmi" onclick="go('createevent');closeFab()"><span class="fmi-ic">📅</span>הוסף חג חדש</div>
+        <div class="fmi" onclick="go('addfam');closeFab()"><span class="fmi-ic">👤</span>הוסף בן משפחה</div>
+      </div>
+      <button class="fab" onclick="toggleFab('hfab')">＋ הוסף</button>
+    </div>
+  </div>
+
+  <nav class="bnav">
+    <button class="ni on" onclick="navTo('home')"><span class="ni-ic">🏠</span><span class="ni-lb">בית</span></button>
+    <button class="ni" onclick="navTo('family')"><span class="ni-ic">👨‍👩‍👧‍👦</span><span class="ni-lb">משפחה</span></button>
+    <button class="ni" onclick="navTo('events')"><span class="ni-ic">📅</span><span class="ni-lb">חגים</span></button>
+    <button class="ni" onclick="navTo('history')"><span class="ni-ic">📜</span><span class="ni-lb">היסטוריה</span></button>
+    <button class="ni" onclick="navTo('more')" style="position:relative;"><span class="ni-ic">⚙️</span><span class="ni-lb">עוד</span><div class="ni-badge">3</div></button>
+  </nav>
+</div>
+
+<!-- ████ FAMILY ████ -->
+<div class="s" id="family" style="padding-bottom:0;">
+  <div class="topbar">
+    <button class="tb-ico" onclick="alert('חיפוש יתווסף בהמשך')">🔍</button>
+    <div class="topbar-title">בני המשפחה</div>
+    <button class="tb-ico" onclick="go('addfam')">＋</button>
+  </div>
+  <div class="hs" style="padding:12px 20px;flex-shrink:0;">
+    <div class="chip on" onclick="chipOne(this)">כולם</div>
+    <div class="chip" onclick="chipOne(this)">אמא</div>
+    <div class="chip" onclick="chipOne(this)">אבא</div>
+    <div class="chip" onclick="chipOne(this)">בן/בת זוג</div>
+    <div class="chip" onclick="chipOne(this)">מורחבת</div>
+  </div>
+  <div style="flex:1;overflow-y:auto;scrollbar-width:none;padding:0 20px 16px;display:flex;flex-direction:column;gap:10px;">
+    <div style="font-size:11px;font-weight:700;color:var(--ink4);text-transform:uppercase;letter-spacing:.6px;margin-top:4px;">משפחת אמא</div>
+    <div class="fc" onclick="go('profile')">
+      <div class="av" style="width:50px;height:50px;background:linear-gradient(135deg,var(--teal),var(--teal-m));font-size:19px;">ל</div>
+      <div class="fc-info"><div class="fc-nm">סבתא לאה</div><div class="fc-side">צד אמא</div><div class="fc-note">אירחה לאחרונה בפסח 2025</div></div>
+      <div class="badge b-ok">מארחת ותיקה</div>
+    </div>
+    <div class="fc" onclick="go('profile')">
+      <div class="av" style="width:50px;height:50px;background:linear-gradient(135deg,var(--ora),var(--ora-l));font-size:19px;">ר</div>
+      <div class="fc-info"><div class="fc-nm">רוני</div><div class="fc-side">צד אמא</div><div class="fc-note">לא השתתפה לאחרונה</div></div>
+      <div class="badge b-warn">נעדרת</div>
+    </div>
+    <div class="fc" onclick="go('profile')">
+      <div class="av" style="width:50px;height:50px;background:linear-gradient(135deg,var(--amb),#F4C94A);font-size:19px;color:var(--ink);">מ</div>
+      <div class="fc-info"><div class="fc-nm">מירי ואריק</div><div class="fc-side">צד אמא</div><div class="fc-note">השתתפו בכל האירועים</div></div>
+      <div class="badge b-ok">פעילים</div>
+    </div>
+    <div style="font-size:11px;font-weight:700;color:var(--ink4);text-transform:uppercase;letter-spacing:.6px;margin-top:8px;">משפחת אבא</div>
+    <div class="fc" onclick="go('profile')">
+      <div class="av" style="width:50px;height:50px;background:linear-gradient(135deg,#5C7FA0,#7BA0C0);font-size:19px;">א</div>
+      <div class="fc-info"><div class="fc-nm">אבי ויעל</div><div class="fc-side">צד אבא</div><div class="fc-note">אירחו בראש השנה 2025</div></div>
+      <div class="badge b-ok">אירחו לאחרונה</div>
+    </div>
+    <div class="fc" onclick="go('profile')">
+      <div class="av" style="width:50px;height:50px;background:#8090A8;font-size:19px;">י</div>
+      <div class="fc-info"><div class="fc-nm">יוסי ודינה</div><div class="fc-side">צד אבא</div><div class="fc-note">לא אירחו זמן רב</div></div>
+      <div class="badge b-mute">טרם אירחו</div>
+    </div>
+  </div>
+  <div class="fab-wrap"><button class="fab" onclick="go('addfam')">＋ הוסף בן משפחה</button></div>
+  <nav class="bnav">
+    <button class="ni" onclick="navTo('home')"><span class="ni-ic">🏠</span><span class="ni-lb">בית</span></button>
+    <button class="ni on" onclick="navTo('family')"><span class="ni-ic">👨‍👩‍👧‍👦</span><span class="ni-lb">משפחה</span></button>
+    <button class="ni" onclick="navTo('events')"><span class="ni-ic">📅</span><span class="ni-lb">חגים</span></button>
+    <button class="ni" onclick="navTo('history')"><span class="ni-ic">📜</span><span class="ni-lb">היסטוריה</span></button>
+    <button class="ni" onclick="navTo('more')" style="position:relative;"><span class="ni-ic">⚙️</span><span class="ni-lb">עוד</span><div class="ni-badge">3</div></button>
+  </nav>
+</div>
+
+<!-- ████ ADD FAM ████ -->
+<div class="s" id="addfam">
+  <div class="topbar"><button class="tb-ico" onclick="goBack()">←</button><div class="topbar-title">הוסף בן משפחה</div><div style="width:36px;"></div></div>
+  <div style="padding:18px 22px;flex:1;overflow-y:auto;scrollbar-width:none;">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:18px;"><div class="photo-up">📷</div><div><div class="f-lb">תמונה</div><div class="f-hint">בחר מהגלריה</div></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="mb14"><div class="f-lb">שם פרטי</div><input class="f-in" placeholder="שם"></div>
+      <div class="mb14"><div class="f-lb">שם משפחה</div><input class="f-in" placeholder="משפחה"></div>
+    </div>
+    <div class="mb14"><div class="f-lb">כינוי</div><input class="f-in" placeholder='למשל: "סבתא"'></div>
+    <div class="mb14"><div class="f-lb">טלפון</div><input class="f-in" placeholder="05X-XXXXXXX" type="tel"></div>
+    <div class="mb14"><div class="f-lb">אימייל</div><input class="f-in" placeholder="example@mail.com" type="email"></div>
+    <div class="mb14">
+      <div class="f-lb">צד משפחתי</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">
+        <div class="chip on" onclick="chipOne(this)">צד אמא</div><div class="chip" onclick="chipOne(this)">צד אבא</div><div class="chip" onclick="chipOne(this)">בן/בת זוג</div><div class="chip" onclick="chipOne(this)">מורחבת</div>
+      </div>
+    </div>
+    <div class="mb14"><div class="f-lb">הערות</div><input class="f-in" placeholder="כל מה שחשוב לזכור"></div>
+  </div>
+  <div style="padding:0 22px 36px;"><button class="btn btn-teal btn-lg" onclick="goBack()">שמור בן משפחה</button></div>
+</div>
+
+<!-- ████ PROFILE ████ -->
+<div class="s" id="profile" style="padding-bottom:80px;">
+  <div class="prof-hero">
+    <button class="prof-back" onclick="goBack()">←</button>
+    <div class="prof-av av" style="background:linear-gradient(135deg,var(--teal),var(--teal-m));">ל</div>
+    <div class="prof-nm">סבתא לאה</div>
+    <div class="prof-tag">🌿 משפחת אמא</div>
+  </div>
+  <div class="prof-stats">
+    <div class="ps"><div class="ps-n">8</div><div class="ps-l">השתתפות</div></div>
+    <div class="ps"><div class="ps-n">5</div><div class="ps-l">אירוחים</div></div>
+    <div class="ps"><div class="ps-n">23</div><div class="ps-l">תמונות</div></div>
+  </div>
+  <div class="prof-sec mt16"><div class="pst">פרטים</div>
+    <div class="p-row"><span class="p-ic">📱</span><span class="p-l">טלפון</span><span class="p-v">052-1234567</span></div>
+    <div class="p-row"><span class="p-ic">✉️</span><span class="p-l">אימייל</span><span class="p-v">lea@family.co.il</span></div>
+    <div class="p-row"><span class="p-ic">📍</span><span class="p-l">עיר</span><span class="p-v">תל אביב</span></div>
+  </div>
+  <div class="prof-sec mt12"><div class="pst">קשרים</div>
+    <div class="p-row"><span class="p-ic">💑</span><span class="p-l">בן זוג</span><span class="p-v">סבא יוסי ז"ל</span></div>
+    <div class="p-row"><span class="p-ic">👩‍👧</span><span class="p-l">ילדים</span><span class="p-v">אמא, אבי, רוני</span></div>
+  </div>
+  <div class="prof-sec mt12"><div class="pst">היסטוריית חגים</div>
+    <div class="h-row"><span class="h-ic">🍷</span><div class="h-inf"><div class="h-t">פסח 2025 – אצלה בבית</div><div class="h-s">אירחה</div></div><div class="badge b-ok">אירחה 🏠</div></div>
+    <div class="h-row"><span class="h-ic">🍎</span><div class="h-inf"><div class="h-t">ראש השנה 2025 – אצל אבי ויעל</div><div class="h-s">השתתפה</div></div><div class="badge b-ok">הגיעה ✓</div></div>
+    <div class="h-row"><span class="h-ic">🌿</span><div class="h-inf"><div class="h-t">סוכות 2025 – חופשה בצפון</div><div class="h-s">לא הגיעה</div></div><div class="badge b-warn">לא הגיעה ✗</div></div>
+  </div>
+  <div class="prof-sec mt12" style="margin-bottom:16px;"><div class="pst">סטטיסטיקה</div>
+    <div class="p-row"><span class="p-ic">📊</span><span class="p-l">השתתפות</span><span class="p-v">8 מתוך 10</span></div>
+    <div class="p-row"><span class="p-ic">🏠</span><span class="p-l">אירחה לאחרונה</span><span class="p-v">פסח 2025</span></div>
+  </div>
+  <div style="padding:0 20px 40px;display:flex;gap:10px;">
+    <button class="btn btn-teal btn-md" style="flex:1;">ערוך</button>
+    <button class="btn btn-out btn-md" style="flex:1;" onclick="go('createevent')">הוסף לאירוע</button>
+  </div>
+</div>
+
+<!-- ████ EVENTS ████ -->
+<div class="s" id="events" style="padding-bottom:0;">
+  <div class="topbar"><div style="width:36px;"></div><div class="topbar-title">חגים ואירועים</div><button class="tb-ico" onclick="go('createevent')">＋</button></div>
+  <div class="hs" style="padding:12px 20px;flex-shrink:0;">
+    <div class="chip on" onclick="chipOne(this)">כל השנים</div>
+    <div class="chip" onclick="chipOne(this)">2026</div>
+    <div class="chip" onclick="chipOne(this)">2025</div>
+    <div class="chip" onclick="chipOne(this)">2024</div>
+  </div>
+  <div class="hs" style="padding:0 20px 12px;flex-shrink:0;">
+    <div class="chip on" onclick="chipOne(this)">כל החגים</div>
+    <div class="chip" onclick="chipOne(this)">פסח</div>
+    <div class="chip" onclick="chipOne(this)">ראש השנה</div>
+    <div class="chip" onclick="chipOne(this)">סוכות</div>
+  </div>
+  <div style="flex:1;overflow-y:auto;scrollbar-width:none;padding:0 20px 16px;display:flex;flex-direction:column;gap:12px;">
+    <div class="ev-card" onclick="go('evdetail')">
+      <div class="ev-hdr"><div class="ev-em" style="background:var(--teal-bg);">🍷</div><div><div class="ev-nm">פסח 2025</div><div class="ev-meta">🏠 אצל סבתא לאה · תל אביב</div><div class="ev-stats"><span class="ev-stat">👥 14</span><span class="ev-stat">📍 תל אביב</span><span class="ev-stat">📷 8</span></div></div></div>
+      <div class="ev-foot"><div class="ev-avs"><div class="ev-av" style="background:var(--teal);">ל</div><div class="ev-av" style="background:var(--ora);">מ</div><div class="ev-av" style="background:var(--teal-d);font-size:9px;">+12</div></div><div style="font-size:11px;color:var(--ink4);">📷 8 תמונות</div></div>
+    </div>
+    <div class="ev-card" onclick="go('evdetail')">
+      <div class="ev-hdr"><div class="ev-em" style="background:var(--ora-bg);">🍎</div><div><div class="ev-nm">ראש השנה 2025</div><div class="ev-meta">🏠 אצל אבי ויעל · חיפה</div><div class="ev-stats"><span class="ev-stat">👥 10</span><span class="ev-stat">📍 חיפה</span><span class="ev-stat">📷 5</span></div></div></div>
+      <div class="ev-foot"><div class="ev-avs"><div class="ev-av" style="background:var(--teal);">ל</div><div class="ev-av" style="background:var(--teal-d);font-size:9px;">+9</div></div><div style="font-size:11px;color:var(--ink4);">📷 5 תמונות</div></div>
+    </div>
+    <div class="ev-card" onclick="go('evdetail')">
+      <div class="ev-hdr"><div class="ev-em" style="background:var(--amb-bg);">🌿</div><div><div class="ev-nm">סוכות 2025</div><div class="ev-meta">🌲 חופשה בצפון · טבריה</div><div class="ev-stats"><span class="ev-stat">👥 8</span><span class="ev-stat">📍 טבריה</span><span class="ev-stat">📷 12</span></div></div></div>
+      <div class="ev-foot"><div class="ev-avs"><div class="ev-av" style="background:var(--teal);">ל</div><div class="ev-av" style="background:var(--teal-d);font-size:9px;">+7</div></div><div style="font-size:11px;color:var(--ink4);">📷 12 תמונות</div></div>
+    </div>
+    <div class="ev-card" onclick="go('evdetail')">
+      <div class="ev-hdr"><div class="ev-em" style="background:var(--teal-bg);">🍷</div><div><div class="ev-nm">פסח 2024</div><div class="ev-meta">🏠 אצל סבתא לאה · תל אביב</div><div class="ev-stats"><span class="ev-stat">👥 12</span><span class="ev-stat">📍 תל אביב</span><span class="ev-stat">📷 3</span></div></div></div>
+      <div class="ev-foot"><div class="ev-avs"><div class="ev-av" style="background:var(--teal);">ל</div><div class="ev-av" style="background:var(--teal-d);font-size:9px;">+11</div></div><div style="font-size:11px;color:var(--ink4);">📷 3 תמונות</div></div>
+    </div>
+  </div>
+  <div class="fab-wrap"><button class="fab" onclick="go('createevent')">＋ חג חדש</button></div>
+  <nav class="bnav">
+    <button class="ni" onclick="navTo('home')"><span class="ni-ic">🏠</span><span class="ni-lb">בית</span></button>
+    <button class="ni" onclick="navTo('family')"><span class="ni-ic">👨‍👩‍👧‍👦</span><span class="ni-lb">משפחה</span></button>
+    <button class="ni on" onclick="navTo('events')"><span class="ni-ic">📅</span><span class="ni-lb">חגים</span></button>
+    <button class="ni" onclick="navTo('history')"><span class="ni-ic">📜</span><span class="ni-lb">היסטוריה</span></button>
+    <button class="ni" onclick="navTo('more')" style="position:relative;"><span class="ni-ic">⚙️</span><span class="ni-lb">עוד</span><div class="ni-badge">3</div></button>
+  </nav>
+</div>
+
+<!-- ████ EVENT DETAIL ████ -->
+<div class="s" id="evdetail" style="padding-bottom:80px;">
+  <div class="ed-hero">
+    <div class="ed-banner" style="background:linear-gradient(145deg,#2A9D8F,#54C6BA);">
+      <div class="ed-overlay"></div>
+      <button class="ed-back" onclick="goBack()">←</button>
+      <div style="font-size:44px;margin-bottom:8px;position:relative;z-index:1;">🍷</div>
+      <div class="ed-title">פסח 2025</div>
+      <div class="ed-sub">אצל סבתא לאה · תל אביב</div>
+    </div>
+  </div>
+  <div style="padding:16px 20px;">
+    <div class="card mb14">
+      <div class="info-row"><span class="ir-ic">📅</span><span class="ir-l">תאריך</span><span class="ir-v">12 באפריל 2025</span></div>
+      <div class="info-row"><span class="ir-ic">📍</span><span class="ir-l">מיקום</span><span class="ir-v">תל אביב</span></div>
+      <div class="info-row"><span class="ir-ic">🏠</span><span class="ir-l">מארח</span><span class="ir-v">סבתא לאה</span></div>
+      <div class="info-row" style="border:none;"><span class="ir-ic">👥</span><span class="ir-l">משתתפים</span><span class="ir-v">14 מתוך 15</span></div>
+    </div>
+    <div class="card mb14" style="padding:0;overflow:hidden;">
+      <div style="font-size:13px;font-weight:700;color:var(--ink2);padding:14px 16px;border-bottom:1px solid var(--bg);">👥 מי הגיע</div>
+      <div class="part-row" onclick="go('profile')"><div class="av" style="width:38px;height:38px;background:var(--teal);font-size:14px;">ל</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--ink);">סבתא לאה</div><div style="font-size:11px;color:var(--ink4);">מארחת</div></div><span style="font-size:20px;color:var(--green);">✓</span></div>
+      <div class="part-row" onclick="go('profile')"><div class="av" style="width:38px;height:38px;background:var(--ora);font-size:14px;">מ</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--ink);">מירי ואריק</div><div style="font-size:11px;color:var(--ink4);">צד אמא</div></div><span style="font-size:20px;color:var(--green);">✓</span></div>
+      <div class="part-row" onclick="go('profile')" style="border:none;"><div class="av" style="width:38px;height:38px;background:var(--teal-l);font-size:14px;color:var(--teal-d);">ר</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--ink);">רוני</div><div style="font-size:11px;color:var(--ink4);">צד אמא</div></div><span style="font-size:20px;color:var(--red);">✗</span></div>
+    </div>
+    <div class="card mb14">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:var(--ink2);">📷 גלריה</div><button class="btn btn-sm btn-ghost" onclick="go('gallery')">+ הוסף תמונות</button></div>
+      <div class="gal">
+        <div class="gal-item">🍷</div><div class="gal-item">👨‍👩‍👧‍👦</div><div class="gal-item">🕯️</div>
+        <div class="gal-item">🍽</div><div class="gal-item">😊</div><div class="gal-item" style="background:var(--sand);font-size:14px;font-weight:700;color:var(--ink3);">+3</div>
+      </div>
+    </div>
+    <div class="card mb14"><div style="font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:8px;">📝 זיכרון</div><div style="font-size:13px;color:var(--ink3);line-height:1.6;font-style:italic;">"ערב חג נפלא, הפעם הראשונה שכולנו היינו יחד אחרי הרבה זמן."</div></div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-teal btn-md" style="flex:1;">ערוך</button>
+      <button class="btn btn-out btn-md" style="flex:1;" onclick="alert('עדכון נוכחות מלא יתווסף בהמשך')">עדכן נוכחות</button>
+      <button class="btn btn-out btn-md" style="flex:1;" onclick="alert('שיתוף יתווסף בהמשך')">שתף</button>
+    </div>
+  </div>
+</div>
+
+<!-- ████ CREATE EVENT ████ -->
+<div class="s" id="createevent">
+  <div class="wiz-bar"><div class="wiz-fill" id="wf" style="width:14%;"></div></div>
+  <div class="wiz-top">
+    <button class="wiz-back" onclick="wizBack()">←</button>
+    <div class="wiz-ttl" id="wt">איזה אירוע?</div>
+    <div class="wiz-step" id="ws-lb">1 / 7</div>
+  </div>
+  <div class="ws on" id="ws1"><div class="type-grid">
+    <div class="type-btn" onclick="selType(this)"><div class="t-ic">🍷</div><div class="t-lb">פסח</div></div>
+    <div class="type-btn" onclick="selType(this)"><div class="t-ic">🍎</div><div class="t-lb">ראש השנה</div></div>
+    <div class="type-btn" onclick="selType(this)"><div class="t-ic">🌿</div><div class="t-lb">סוכות</div></div>
+    <div class="type-btn" onclick="selType(this)"><div class="t-ic">🌸</div><div class="t-lb">שבועות</div></div>
+    <div class="type-btn" onclick="selType(this)"><div class="t-ic">🍽</div><div class="t-lb">ארוחת שישי</div></div>
+    <div class="type-btn" onclick="selType(this)"><div class="t-ic">👨‍👩‍👧‍👦</div><div class="t-lb">מפגש משפחתי</div></div>
+    <div class="type-btn" onclick="selType(this)"><div class="t-ic">🎂</div><div class="t-lb">יום הולדת</div></div>
+    <div class="type-btn" onclick="selType(this)"><div class="t-ic">✨</div><div class="t-lb">אחר</div></div>
+  </div></div>
+  <div class="ws" id="ws2"><div style="padding:8px 22px 20px;">
+    <div class="mb14"><div class="f-lb">תאריך</div><input class="f-in" type="date"></div>
+    <div class="mb14"><div class="f-lb">תאריך עברי (לא חובה)</div><input class="f-in" placeholder='ט"ז ניסן תשפ"ה'></div>
+    <div class="mb14"><div class="f-lb">שנה</div><input class="f-in" value="2026"></div>
+  </div></div>
+  <div class="ws" id="ws3"><div style="padding:8px 22px 20px;">
+    <div class="f-lb" style="margin-bottom:12px;">אצל מי?</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div class="fc" onclick="selHost(this)"><div class="av" style="width:40px;height:40px;background:var(--teal);font-size:15px;">ל</div><div class="fc-info"><div class="fc-nm">סבתא לאה</div><div class="fc-side">אירחה 5 פעמים</div></div><div class="chk"></div></div>
+      <div class="fc" onclick="selHost(this)"><div class="av" style="width:40px;height:40px;background:#5C7FA0;font-size:15px;">א</div><div class="fc-info"><div class="fc-nm">אבי ויעל</div><div class="fc-side">אירחו 2 פעמים</div></div><div class="chk"></div></div>
+      <div class="fc" onclick="selHost(this)"><div class="av" style="width:40px;height:40px;background:#8090A8;font-size:15px;">י</div><div class="fc-info"><div class="fc-nm">יוסי ודינה</div><div class="fc-side">לא אירחו זמן רב</div></div><div class="chk"></div></div>
+    </div>
+    <div class="mb14 mt16"><div class="f-lb">או הזן ידנית</div><input class="f-in mt8" placeholder='"חופשה בצפון" / "בית מלון"'></div>
+  </div></div>
+  <div class="ws" id="ws4"><div style="padding:8px 22px 20px;">
+    <div class="mb14"><div class="f-lb">מיקום</div><input class="f-in" placeholder="שם הבית / המקום"></div>
+    <div class="mb14"><div class="f-lb">כתובת</div><input class="f-in" placeholder="רחוב ומספר, עיר"></div>
+    <button class="btn btn-out btn-md" style="width:100%;border-radius:10px;">🗺 קישור לווייז / מפה</button>
+  </div></div>
+  <div class="ws" id="ws5"><div style="padding:8px 22px 20px;">
+    <div class="f-lb" style="margin-bottom:12px;">מי מוזמן?</div>
+    <div class="m-row"><div class="av" style="width:36px;height:36px;background:var(--teal);font-size:14px;">ל</div><div class="m-nm">סבתא לאה<br><span class="m-sub">צד אמא</span></div><div class="chk on" onclick="toggleChk(this)">✓</div></div>
+    <div class="m-row"><div class="av" style="width:36px;height:36px;background:var(--ora);font-size:14px;">ר</div><div class="m-nm">רוני<br><span class="m-sub">צד אמא</span></div><div class="chk on" onclick="toggleChk(this)">✓</div></div>
+    <div class="m-row"><div class="av" style="width:36px;height:36px;background:var(--amb);font-size:14px;color:var(--ink);">מ</div><div class="m-nm">מירי ואריק<br><span class="m-sub">צד אמא</span></div><div class="chk on" onclick="toggleChk(this)">✓</div></div>
+    <div class="m-row"><div class="av" style="width:36px;height:36px;background:#5C7FA0;font-size:14px;">א</div><div class="m-nm">אבי ויעל<br><span class="m-sub">צד אבא</span></div><div class="chk on" onclick="toggleChk(this)">✓</div></div>
+    <div class="m-row"><div class="av" style="width:36px;height:36px;background:#8090A8;font-size:14px;">י</div><div class="m-nm">יוסי ודינה<br><span class="m-sub">צד אבא</span></div><div class="chk" onclick="toggleChk(this)">✓</div></div>
+  </div></div>
+  <div class="ws" id="ws6"><div style="padding:8px 22px 20px;">
+    <div class="f-lb" style="margin-bottom:12px;">סטטוס הגעה</div>
+    <div class="m-row"><div class="av" style="width:36px;height:36px;background:var(--teal);font-size:14px;">ל</div><div style="flex:1;"><div class="m-nm">סבתא לאה</div><div class="st"><div class="st-o on" onclick="selSt(this)">הוזמן</div><div class="st-o" onclick="selSt(this)">אישר</div><div class="st-o" onclick="selSt(this)">לא מגיע</div></div></div></div>
+    <div class="m-row"><div class="av" style="width:36px;height:36px;background:var(--ora);font-size:14px;">ר</div><div style="flex:1;"><div class="m-nm">רוני</div><div class="st"><div class="st-o" onclick="selSt(this)">הוזמן</div><div class="st-o on" onclick="selSt(this)">אישר</div><div class="st-o" onclick="selSt(this)">לא מגיע</div></div></div></div>
+    <div class="m-row"><div class="av" style="width:36px;height:36px;background:var(--amb);font-size:14px;color:var(--ink);">מ</div><div style="flex:1;"><div class="m-nm">מירי ואריק</div><div class="st"><div class="st-o on" onclick="selSt(this)">הוזמן</div><div class="st-o" onclick="selSt(this)">אישר</div><div class="st-o" onclick="selSt(this)">לא מגיע</div></div></div></div>
+    <div class="m-row"><div class="av" style="width:36px;height:36px;background:#5C7FA0;font-size:14px;">א</div><div style="flex:1;"><div class="m-nm">אבי ויעל</div><div class="st"><div class="st-o" onclick="selSt(this)">הוזמן</div><div class="st-o on" onclick="selSt(this)">אישר</div><div class="st-o" onclick="selSt(this)">לא מגיע</div></div></div></div>
+  </div></div>
+  <div class="ws" id="ws7"><div style="padding:8px 22px 20px;">
+    <div class="mb14"><div class="f-lb">הערות</div><textarea class="f-in" style="height:110px;resize:none;padding-top:12px;" placeholder='"הבאנו מתנות", "כולם הגיעו"...'></textarea></div>
+    <div><div class="f-lb">זיכרון קצר</div><textarea class="f-in mt8" style="height:80px;resize:none;" placeholder='"ערב מיוחד במיוחד..."'></textarea></div>
+  </div></div>
+  <div style="padding:0 22px 40px;margin-top:auto;flex-shrink:0;">
+    <button class="btn btn-teal btn-lg" id="wiz-btn" onclick="wizNext()">הבא</button>
+  </div>
+</div>
+
+<!-- ████ PLANNING ████ -->
+<div class="s" id="planning" style="padding-bottom:80px;">
+  <div class="plan-banner" style="position:relative;">
+    <button class="pb-back" onclick="goBack()">←</button>
+    <div style="font-size:38px;margin-bottom:12px;">✨</div>
+    <div style="font-size:12px;opacity:.65;font-weight:600;">תכנון החג הבא</div>
+    <div style="font-size:26px;font-weight:900;letter-spacing:-.5px;margin:4px 0 6px;">פסח 2026</div>
+    <div style="font-size:13px;opacity:.75;">עוד 34 יום · עדיין לא נקבע מארח</div>
+  </div>
+  <div style="padding:18px 20px;">
+    <div class="ai-card">
+      <div class="ai-hdr"><div class="ai-pip" style="background:var(--teal-bg);">💡</div><div class="ai-ttl">לפני הבחירה</div></div>
+      <div class="ai-row"><div class="ai-bul"></div><div class="ai-txt">שנה שעברה: פסח 2025 אצל סבתא לאה</div></div>
+      <div class="ai-row"><div class="ai-bul"></div><div class="ai-txt">לפני שנתיים: פסח 2024 גם אצל סבתא לאה</div></div>
+      <div class="ai-row"><div class="ai-bul"></div><div class="ai-txt">ראש השנה 2025: אצל אבי ויעל</div></div>
+      <div class="ai-row"><div class="ai-bul" style="background:var(--green);"></div><div class="ai-txt">יוסי ודינה טרם אירחו – שווה לבדוק</div></div>
+    </div>
+    <div class="rec mt12">
+      <div style="font-size:28px;margin-bottom:8px;">💬</div>
+      <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:5px;">כדאי לשקול את הצד השני</div>
+      <div style="font-size:13px;color:var(--ink2);line-height:1.55;">יוסי ודינה לא אירחו זמן רב — הזדמנות מעולה לאיזון.</div>
+    </div>
+    <div style="margin-top:20px;">
+      <button class="pa" onclick="go('createevent')"><span class="pa-ic">🏠</span>בחר מארח</button>
+      <button class="pa" onclick="alert('הצבעה תתווסף בהמשך')"><span class="pa-ic">🗳</span>פתח הצבעה</button>
+      <button class="pa" onclick="alert('שליחת עדכון תתווסף בהמשך')"><span class="pa-ic">📤</span>שלח עדכון למשפחה</button>
+      <button class="pa" onclick="alert('שמירת תכנון מלא תתווסף בהמשך')"><span class="pa-ic">✅</span>שמור תכנון ראשוני</button>
+    </div>
+  </div>
+</div>
+
+<!-- ████ GALLERY ████ -->
+<div class="s" id="gallery" style="padding-bottom:80px;">
+  <div class="topbar"><button class="tb-ico" onclick="goBack()">←</button><div class="topbar-title">תמונות וזיכרונות</div><div style="width:36px;"></div></div>
+  <div class="hs" style="padding:12px 20px;flex-shrink:0;">
+    <div class="chip on" onclick="chipOne(this)">הכל</div>
+    <div class="chip" onclick="chipOne(this)">פסח</div>
+    <div class="chip" onclick="chipOne(this)">ראש השנה</div>
+    <div class="chip" onclick="chipOne(this)">לפי אדם</div>
+    <div class="chip" onclick="chipOne(this)">2025</div>
+  </div>
+  <div style="padding:8px 20px 4px;font-size:11px;font-weight:800;color:var(--ink4);text-transform:uppercase;letter-spacing:.8px;">פסח 2025</div>
+  <div class="gal-full"><div class="gf">🍷</div><div class="gf">👨‍👩‍👧‍👦</div><div class="gf">🕯️</div><div class="gf">🍽</div><div class="gf">😊</div><div class="gf">🌙</div></div>
+  <div style="padding:8px 20px 4px;font-size:11px;font-weight:800;color:var(--ink4);text-transform:uppercase;letter-spacing:.8px;">ראש השנה 2025</div>
+  <div class="gal-full"><div class="gf">🍎</div><div class="gf">🕯️</div><div class="gf">😊</div><div class="gf">🥂</div><div class="gf">👨‍👩‍👧‍👦</div><div class="gf">🍽</div></div>
+  <div style="padding:8px 20px 4px;font-size:11px;font-weight:800;color:var(--ink4);text-transform:uppercase;letter-spacing:.8px;">סוכות 2025</div>
+  <div class="gal-full"><div class="gf">🌿</div><div class="gf">⛺</div><div class="gf">🌅</div><div class="gf">🏊</div><div class="gf">🌄</div><div class="gf" style="background:var(--sand);font-size:13px;font-weight:800;color:var(--ink3);">+6</div></div>
+</div>
+
+<!-- ████ HISTORY ████ -->
+<div class="s" id="history" style="padding-bottom:0;">
+  <div class="topbar"><div style="width:36px;"></div><div class="topbar-title">היסטוריה</div><div style="width:36px;"></div></div>
+  <div class="tabs">
+    <button class="tab on" onclick="setTab(this)">שנה</button>
+    <button class="tab" onclick="setTab(this)">חג</button>
+    <button class="tab" onclick="setTab(this)">אדם</button>
+    <button class="tab" onclick="setTab(this)">מארח</button>
+  </div>
+  <div style="flex:1;overflow-y:auto;scrollbar-width:none;">
+    <div class="tl">
+      <div class="tl-yr">2026</div>
+      <div class="tl-item" onclick="go('planning')"><div class="tl-dot" style="background:var(--teal-bg);">🌙</div><div class="tl-cont"><div class="tl-t">פסח 2026</div><div class="tl-s">📌 בתכנון · עוד 34 יום</div></div></div>
+      <div class="tl-yr">2025</div>
+      <div class="tl-item" onclick="go('evdetail')"><div class="tl-dot" style="background:var(--teal-bg);">🍷</div><div class="tl-cont"><div class="tl-t">פסח 2025</div><div class="tl-s">🏠 אצל סבתא לאה · 14 משתתפים</div></div></div>
+      <div class="tl-item" onclick="go('evdetail')"><div class="tl-dot" style="background:var(--ora-bg);">🍎</div><div class="tl-cont"><div class="tl-t">ראש השנה 2025</div><div class="tl-s">🏠 אצל אבי ויעל · 10 משתתפים</div></div></div>
+      <div class="tl-item" onclick="go('evdetail')"><div class="tl-dot" style="background:var(--amb-bg);">🌿</div><div class="tl-cont"><div class="tl-t">סוכות 2025</div><div class="tl-s">🌲 חופשה בצפון · 8 משתתפים</div></div></div>
+      <div class="tl-yr">2024</div>
+      <div class="tl-item" onclick="go('evdetail')"><div class="tl-dot" style="background:var(--teal-bg);">🍷</div><div class="tl-cont"><div class="tl-t">פסח 2024</div><div class="tl-s">🏠 אצל סבתא לאה · 12 משתתפים</div></div></div>
+      <div class="tl-item" onclick="go('evdetail')"><div class="tl-dot" style="background:var(--ora-bg);">🍎</div><div class="tl-cont"><div class="tl-t">ראש השנה 2024</div><div class="tl-s">🏠 אצל סבתא לאה · 11 משתתפים</div></div></div>
+    </div>
+  </div>
+  <nav class="bnav">
+    <button class="ni" onclick="navTo('home')"><span class="ni-ic">🏠</span><span class="ni-lb">בית</span></button>
+    <button class="ni" onclick="navTo('family')"><span class="ni-ic">👨‍👩‍👧‍👦</span><span class="ni-lb">משפחה</span></button>
+    <button class="ni" onclick="navTo('events')"><span class="ni-ic">📅</span><span class="ni-lb">חגים</span></button>
+    <button class="ni on" onclick="navTo('history')"><span class="ni-ic">📜</span><span class="ni-lb">היסטוריה</span></button>
+    <button class="ni" onclick="navTo('more')" style="position:relative;"><span class="ni-ic">⚙️</span><span class="ni-lb">עוד</span><div class="ni-badge">3</div></button>
+  </nav>
+</div>
+
+<!-- ████ NOTIFICATIONS ████ -->
+<div class="s" id="notifs" style="padding-bottom:80px;">
+  <div class="topbar"><button class="tb-ico" onclick="goBack()">←</button><div class="topbar-title">התראות</div><div style="width:36px;"></div></div>
+  <div style="padding:14px 20px;">
+    <div class="notif unread" onclick="go('planning')"><div class="notif-ic">📅</div><div><div class="notif-t">פסח בעוד 34 יום – עדיין לא נקבע מארח</div><div class="notif-s">לחץ לתכנן עכשיו</div></div></div>
+    <div class="notif unread" onclick="alert('שליחת תזכורת תתווסף בהמשך')"><div class="notif-ic">⏳</div><div><div class="notif-t">רוני ודוד עדיין לא אישרו הגעה לפסח 2026</div><div class="notif-s">שלח תזכורת</div></div></div>
+    <div class="notif unread" onclick="go('evdetail')"><div class="notif-ic">✅</div><div><div class="notif-t">עדכנו מי הגיע לראש השנה?</div><div class="notif-s">עדכן סטטוס</div></div></div>
+    <div class="notif" onclick="go('gallery')"><div class="notif-ic">📸</div><div><div class="notif-t">נוספו 3 תמונות לאירוע הסוכות</div><div class="notif-s">לפני 2 ימים</div></div></div>
+    <div class="notif"><div class="notif-ic">👤</div><div><div class="notif-t">דינה הצטרפה למשפחת רפסון</div><div class="notif-s">לפני שבוע</div></div></div>
+  </div>
+</div>
+
+<!-- ████ MORE ████ -->
+<div class="s" id="more" style="padding-bottom:0;">
+  <div class="topbar"><div style="width:36px;"></div><div class="topbar-title">עוד</div><div style="width:36px;"></div></div>
+  <div style="flex:1;overflow-y:auto;scrollbar-width:none;padding:14px 20px 20px;">
+    <!-- User card -->
+    <div class="card" style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+      <div class="av" style="width:56px;height:56px;background:linear-gradient(135deg,var(--teal),var(--teal-d));font-size:22px;font-weight:900;">א</div>
+      <div style="flex:1;"><div style="font-size:17px;font-weight:800;color:var(--ink);">אופיר רפסון</div><div style="font-size:12px;color:var(--ink3);margin-top:2px;">מנהל · משפחת רפסון</div><div style="font-size:12px;color:var(--teal);margin-top:4px;cursor:pointer;font-weight:600;">ערוך פרופיל ←</div></div>
+    </div>
+    <!-- Main features -->
+    <div style="font-size:10.5px;font-weight:800;color:var(--ink4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;">פיצ'רים</div>
+    <div class="more-sec">
+      <div class="more-row" onclick="go('gallery')"><div class="mr-pip" style="background:var(--teal-bg);">📷</div><div class="mr-inf"><div class="mr-t">תמונות וזיכרונות</div><div class="mr-s">הגלריה המשפחתית</div></div><div class="mr-arr">›</div></div>
+      <div class="more-row" onclick="go('notifs')"><div class="mr-pip" style="background:var(--red-bg);">🔔</div><div class="mr-inf"><div class="mr-t">התראות</div><div class="mr-s">3 ממתינות</div></div><div class="mr-badge">3</div></div>
+      <div class="more-row" onclick="go('planning')"><div class="mr-pip" style="background:var(--teal-bg);">✨</div><div class="mr-inf"><div class="mr-t">תכנון החג הבא</div><div class="mr-s">פסח 2026</div></div><div class="mr-arr">›</div></div>
+    </div>
+    <div style="font-size:10.5px;font-weight:800;color:var(--ink4);text-transform:uppercase;letter-spacing:.8px;margin:12px 0 8px;">ניהול</div>
+    <div class="more-sec">
+      <div class="more-row" onclick="go('myfamilies')"><div class="mr-pip" style="background:var(--teal-bg);">🏡</div><div class="mr-inf"><div class="mr-t">ניהול משפחה</div><div class="mr-s">הגדרות, הרשאות, קוד</div></div><div class="mr-arr">›</div></div>
+      <div class="more-row"><div class="mr-pip" style="background:var(--green-bg);">📨</div><div class="mr-inf"><div class="mr-t">הזמנות</div><div class="mr-s">שלח קוד RAPSON26</div></div><div class="mr-arr">›</div></div>
+    </div>
+    <div style="font-size:10.5px;font-weight:800;color:var(--ink4);text-transform:uppercase;letter-spacing:.8px;margin:12px 0 8px;">הגדרות</div>
+    <div class="more-sec">
+      <div class="more-row" onclick="go('settings')"><div class="mr-pip" style="background:var(--bg);">⚙️</div><div class="mr-inf"><div class="mr-t">הגדרות</div></div><div class="mr-arr">›</div></div>
+      <div class="more-row"><div class="mr-pip" style="background:var(--bg);">🔒</div><div class="mr-inf"><div class="mr-t">פרטיות ותנאים</div></div><div class="mr-arr">›</div></div>
+      <div class="more-row"><div class="mr-pip" style="background:var(--bg);">💬</div><div class="mr-inf"><div class="mr-t">יצירת קשר</div></div><div class="mr-arr">›</div></div>
+    </div>
+    <div style="text-align:center;font-size:12px;color:var(--ink4);margin-top:20px;">סדר בסדר v1.0 · ❤️ עם אהבה למשפחה</div>
+  </div>
+  <nav class="bnav">
+    <button class="ni" onclick="navTo('home')"><span class="ni-ic">🏠</span><span class="ni-lb">בית</span></button>
+    <button class="ni" onclick="navTo('family')"><span class="ni-ic">👨‍👩‍👧‍👦</span><span class="ni-lb">משפחה</span></button>
+    <button class="ni" onclick="navTo('events')"><span class="ni-ic">📅</span><span class="ni-lb">חגים</span></button>
+    <button class="ni" onclick="navTo('history')"><span class="ni-ic">📜</span><span class="ni-lb">היסטוריה</span></button>
+    <button class="ni on" onclick="navTo('more')"><span class="ni-ic">⚙️</span><span class="ni-lb">עוד</span></button>
+  </nav>
+</div>
+
+<!-- ████ SETTINGS ████ -->
+<div class="s" id="settings" style="padding-bottom:80px;">
+  <div class="topbar"><button class="tb-ico" onclick="goBack()">←</button><div class="topbar-title">הגדרות</div><div style="width:36px;"></div></div>
+  <div style="padding:14px 20px;">
+    <div class="more-sec mb14">
+      <div class="set-row"><span class="sr-ic">🔔</span><span class="sr-lb">התראות</span><div class="tgl" onclick="this.classList.toggle('off')"></div></div>
+      <div class="set-row"><span class="sr-ic">🌙</span><span class="sr-lb">מצב כהה</span><div class="tgl off" onclick="this.classList.toggle('off')"></div></div>
+      <div class="set-row"><span class="sr-ic">🌐</span><span class="sr-lb">שפה</span><span class="sr-arr" style="font-size:13px;color:var(--ink2);">עברית ›</span></div>
+    </div>
+    <div class="more-sec">
+      <div class="set-row"><span class="sr-ic">🔒</span><span class="sr-lb">פרטיות</span><span class="sr-arr">›</span></div>
+      <div class="set-row"><span class="sr-ic">📄</span><span class="sr-lb">תנאי שימוש</span><span class="sr-arr">›</span></div>
+      <div class="set-row"><span class="sr-ic">💬</span><span class="sr-lb">יצירת קשר</span><span class="sr-arr">›</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ████ MY FAMILIES ████ -->
+<div class="s" id="myfamilies" style="padding-bottom:80px;">
+  <div class="topbar"><button class="tb-ico" onclick="goBack()">←</button><div class="topbar-title">המשפחות שלי</div><div style="width:36px;"></div></div>
+  <div style="padding:14px 20px;">
+    <div style="font-size:10.5px;font-weight:800;color:var(--ink4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;">משפחה ראשית</div>
+    <div class="more-sec mb14">
+      <div class="more-row">
+        <div class="mr-pip" style="background:var(--teal-bg);">🏡</div>
+        <div class="mr-inf"><div class="mr-t">משפחת רפסון</div><div class="mr-s">Primary family</div></div>
+        <div class="badge b-teal">ראשית</div>
+      </div>
+    </div>
+
+    <div style="font-size:10.5px;font-weight:800;color:var(--ink4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;">משפחת בן/בת זוג</div>
+    <div class="more-sec mb14">
+      <div class="more-row">
+        <div class="mr-pip" style="background:var(--ora-bg);">💞</div>
+        <div class="mr-inf"><div class="mr-t">משפחת סנסולו</div><div class="mr-s">משפחה מחוברת דרך בת הזוג</div></div>
+        <div class="badge b-mute">בת זוג</div>
+      </div>
+    </div>
+
+    <div style="font-size:10.5px;font-weight:800;color:var(--ink4);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;">משפחות קשורות</div>
+    <div class="more-sec mb14">
+      <div class="more-row">
+        <div class="mr-pip" style="background:var(--amb-bg);">👪</div>
+        <div class="mr-inf"><div class="mr-t">משפחת פרנקל</div><div class="mr-s">משתתפת באירועים משותפים</div></div>
+        <div class="badge b-mute">קשורה</div>
+      </div>
+      <div class="more-row">
+        <div class="mr-pip" style="background:#F0EEFF;">👪</div>
+        <div class="mr-inf"><div class="mr-t">משפחת באומר</div><div class="mr-s">משפחה מורחבת קשורה</div></div>
+        <div class="badge b-mute">קשורה</div>
+      </div>
+    </div>
+
+    <button class="btn btn-teal btn-lg" onclick="alert('מסך הזמנות מלא יתווסף בהמשך')">הזמן משפחה נוספת</button>
+  </div>
+</div>
+
+
+</div><!-- /phone -->
+
+<script>
+// ── Nav ──────────────────────────────────────
+let stack = ['sp'];
+let cur   = 'sp';
+
+function go(id) {
+  closeFab();
+  if (cur === id) return;
+  document.getElementById(cur)?.classList.remove('on');
+  const el = document.getElementById(id);
+  if (el) {
+    el.classList.add('on');
+    el.scrollTop = 0;
+  }
+  stack.push(id);
+  cur = id;
+}
+
+function goBack() {
+  if (stack.length > 1) {
+    stack.pop();
+    const prev = stack[stack.length - 1];
+    document.getElementById(cur)?.classList.remove('on');
+    const el = document.getElementById(prev);
+    if (el) { el.classList.add('on'); el.scrollTop = 0; }
+    cur = prev;
+  }
+}
+
+function navTo(id) {
+  closeFab();
+  document.getElementById(cur)?.classList.remove('on');
+  const el = document.getElementById(id);
+  if (el) { el.classList.add('on'); el.scrollTop = 0; }
+  stack = [id]; cur = id;
+}
+
+// Splash
+setTimeout(() => {
+  if (cur === 'sp') go('login');
+}, 2900);
+
+// Onboarding
+let obI = 0;
+function obNext() {
+  if (obI < 3) {
+    obI++;
+    document.getElementById('ob-track').style.transform = `translateX(${obI * 100}%)`;
+    document.querySelectorAll('.ob-dot').forEach((d,i) => d.classList.toggle('on', i === obI));
+    const btn = document.getElementById('ob-btn');
+    if (obI === 3) { btn.textContent = 'מתחילים!'; btn.onclick = () => go('cf'); }
+  }
+}
+
+// Wizard
+let wi = 1;
+const wtitles = ['','איזה אירוע?','תאריך','אצל מי?','איפה?','מי מוזמן?','סטטוס','הערות'];
+function wizNext() {
+  if (wi < 7) {
+    document.getElementById('ws'+wi).classList.remove('on');
+    wi++;
+    document.getElementById('ws'+wi).classList.add('on');
+    document.getElementById('wt').textContent = wtitles[wi];
+    document.getElementById('ws-lb').textContent = wi + ' / 7';
+    document.getElementById('wf').style.width = (wi/7*100) + '%';
+    const btn = document.getElementById('wiz-btn');
+    if (wi === 7) { btn.textContent = 'שמור אירוע'; btn.onclick = saveEv; }
+  }
+}
+function saveEv() { wi=1; resetWiz(); go('evdetail'); }
+function wizBack() {
+  if (wi > 1) {
+    document.getElementById('ws'+wi).classList.remove('on');
+    wi--;
+    document.getElementById('ws'+wi).classList.add('on');
+    document.getElementById('wt').textContent = wtitles[wi];
+    document.getElementById('ws-lb').textContent = wi + ' / 7';
+    document.getElementById('wf').style.width = (wi/7*100) + '%';
+    const btn = document.getElementById('wiz-btn');
+    btn.textContent = 'הבא'; btn.onclick = wizNext;
+  } else { resetWiz(); goBack(); }
+}
+function resetWiz() {
+  for (let i=1;i<=7;i++) {
+    const w=document.getElementById('ws'+i);
+    if(w) w.classList.toggle('on',i===1);
+  }
+  document.getElementById('wt').textContent = wtitles[1];
+  document.getElementById('ws-lb').textContent = '1 / 7';
+  document.getElementById('wf').style.width = '14%';
+  const btn = document.getElementById('wiz-btn');
+  btn.textContent = 'הבא';
+  btn.onclick = wizNext;
+
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('sel'));
+  document.querySelectorAll('.chk').forEach(c => {
+    c.classList.remove('on');
+    c.textContent = '';
+  });
+  document.querySelectorAll('.st').forEach(group => {
+    group.querySelectorAll('.st-o').forEach(opt => opt.classList.remove('on'));
+  });
+  document.querySelectorAll('#createevent input, #createevent textarea').forEach(el => {
+    if (el.type !== 'date') el.value = '';
+  });
+}
+
+// FAB
+function toggleFab(id) { document.getElementById(id)?.classList.toggle('open'); }
+function closeFab()     { document.querySelectorAll('.fab-menu').forEach(m => m.classList.remove('open')); }
+document.addEventListener('click', e => { if (!e.target.closest('.fab-wrap')) closeFab(); });
+
+// Helpers
+function chipOne(el) {
+  el.closest('div').querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+}
+function setTab(btn) { btn.parentElement.querySelectorAll('.tab').forEach(b => b.classList.remove('on')); btn.classList.add('on'); }
+function selType(el)  { document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('sel')); el.classList.add('sel'); }
+function selHost(el) {
+  const container = el.closest('.ws');
+  container.querySelectorAll('.fc').forEach(card => card.style.border = 'none');
+  container.querySelectorAll('.chk').forEach(c => {
+    c.classList.remove('on');
+    c.textContent = '';
+  });
+  el.style.border = '2px solid var(--teal)';
+  const chk = el.querySelector('.chk');
+  chk.classList.add('on');
+  chk.textContent = '✓';
+}
+function toggleChk(el){
+  const isOn = el.classList.toggle('on');
+  el.textContent = isOn ? '✓' : '';
+}
+function selSt(el)    { el.closest('.st').querySelectorAll('.st-o').forEach(s => s.classList.remove('on')); el.classList.add('on'); }
+</script>
+</body>
+</html>
