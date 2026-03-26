@@ -1,4 +1,5 @@
 'use client'
+import type { ReactNode } from 'react'
 import { type FamilyMember, EVENT_EMOJIS, type EventType } from '@/types'
 
 // ── AVATAR ───────────────────────────────────────────────────────────────────
