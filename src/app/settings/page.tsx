@@ -42,8 +42,8 @@ export default function SettingsPage() {
     const { data: members } = await supabase.from('family_members').select('family_id').eq('user_id', user.id)
     if (members && members.length > 0) {
       const ids = members.map((m: any) => m.family_id)
-      const { data: families } = await supabase.from('families').select('id, family_name, invite_code').in('id', ids)
-      setMyFamilies(families || [])
+      const { data: families } = await supabase.from('families').select('*').in('id', ids)
+      setMyFamilies((families || []) as Family[])
     }
     setLoading(false)
   }
