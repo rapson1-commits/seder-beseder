@@ -30,7 +30,7 @@ export function HolidayIcon({ type, size = 'md' }: { type: string; size?: 'sm' |
 
 // ── BADGE ─────────────────────────────────────────────────────────────────────
 export function Badge({ children, variant = 'navy' }: {
-  children: React.ReactNode
+  children: ReactNode
   variant?: 'green' | 'orange' | 'gold' | 'red' | 'blue' | 'navy'
 }) {
   return <span className={`bdg bdg-${variant}`}>{children}</span>
@@ -57,7 +57,7 @@ export function CardSkeleton() {
 
 // ── EMPTY STATE ───────────────────────────────────────────────────────────────
 export function EmptyState({ emoji, title, sub, action }: {
-  emoji: string; title: string; sub: string; action?: React.ReactNode
+  emoji: string; title: string; sub: string; action?: ReactNode
 }) {
   return (
     <div className="text-center py-14 px-8">
@@ -126,8 +126,8 @@ export function AdminOnly({
   fallback = null,
 }: {
   isAdmin: boolean
-  children: React.ReactNode
-  fallback?: React.ReactNode
+  children: ReactNode
+  fallback?: ReactNode
 }) {
   return isAdmin ? <>{children}</> : <>{fallback}</>
 }
