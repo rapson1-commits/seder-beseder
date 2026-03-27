@@ -4,7 +4,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { upsertEvent, getMembers, upsertParticipant, getEvent } from '@/lib/db'
 import { supabase } from '@/lib/supabase'
 import { Avatar, Toast } from '@/components/ui'
-import type { FamilyMember, Event, EventType } from '@/types'
+import type { FamilyMember, EventType } from '@/types'
 import { EVENT_EMOJIS } from '@/types'
 
 const HOLIDAY_OPTIONS: EventType[] = [
